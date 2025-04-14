@@ -3,7 +3,10 @@
 > React + TypeScript + Recoil 기반의 웹 애플리케이션  
 > 사용자 중심의 UI/UX와 확장 가능한 상태 관리 구조를 목표로 한 프론트엔드 프로젝트입니다.
 > 게임 전적 , 채팅 솔루션 프로그램입니다.
-
+## Project setup
+```
+npm install
+```
 ---
 
 ## 🛠️ 기술 스택
