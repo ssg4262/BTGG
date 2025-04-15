@@ -1,8 +1,13 @@
 import profile from "@/assets/img/profile/profile.png";
+import {ActionTooltip} from "@/components/ui/ActionToolTip.tsx";
 
 export const UserInfo = () => {
     return(
         <>
+            <div className="h-[70px] bg-[rgb(99,99,99)] shadow-ml rounded-tl-2xl">
+                <div className="flex justify-end m-2">
+                </div>
+            </div>
             <div className="relative">
                 {/* 프로필 이미지 */}
                 <div className="absolute -top-10 left-4">
@@ -23,11 +28,13 @@ export const UserInfo = () => {
                     <p className="text-lg font-bold">고승범</p> {/* 위 간격 추가 */}
                     <div className="flex items-center gap-1">
                         <p className="text-[12px] text-white">goseungbeom5757</p>
-                        <div className="w-6 h-6 flex items-center justify-center rounded-md bg-[#313338]">
-                            <div className="w-[16px] h-[16px] flex items-center justify-center rounded-full bg-[#1ABC9C] text-black font-bold text-[12px]">
-                                #
+                        <ActionTooltip side="top" align="center" label="goseungbeom5757 + #223388">
+                            <div className="w-6 h-6 flex items-center justify-center rounded-md bg-[#313338]">
+                                <div className="w-[16px] h-[16px] flex items-center justify-center rounded-full bg-[#1ABC9C] text-black font-bold text-[12px]">
+                                    #
+                                </div>
                             </div>
-                        </div>
+                        </ActionTooltip>
                     </div>
                     <p className="text-[11px] mt-1 text-gray-400 flex items-center gap-1">
                         친구 5명 <span className="text-[5px] leading-none relative top-[-1.5px]">●</span> 서버 2개
