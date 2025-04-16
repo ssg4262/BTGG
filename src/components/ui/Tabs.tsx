@@ -1,19 +1,19 @@
 import { useState } from "react";
 
 type Tab = {
-    id: string;
+    id: number;
     label: string;
 };
 
 type TabsProps = {
     tabs: Tab[];
-    onTabChange?: (tabId: string) => void;
+    onTabChange?: (tabId: number) => void;
 };
 
 export const Tabs = ({ tabs, onTabChange }: TabsProps) => {
     const [activeTab, setActiveTab] = useState(tabs[0]?.id || "");
 
-    const handleClick = (tabId: string) => {
+    const handleClick = (tabId: number) => {
         setActiveTab(tabId);
         onTabChange?.(tabId);
     };
@@ -24,7 +24,7 @@ export const Tabs = ({ tabs, onTabChange }: TabsProps) => {
                 <button
                     key={tab.id}
                     onClick={() => handleClick(tab.id)}
-                    className={`py-2 text-sm font-medium ${
+                    className={`py-2 text-sm font-medium cursor-pointer ${
                         activeTab === tab.id
                             ? "text-indigo-400 border-b-2 border-indigo-400"
                             : "text-gray-400 hover:text-gray-200"
