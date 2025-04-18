@@ -1,4 +1,5 @@
 import React from 'react';
+import {ActionTooltip} from "@/components/ui/ActionToolTip.tsx";
 
 interface UserCardProps {
     avatarUrl: string;
@@ -35,6 +36,13 @@ const UserCard: React.FC<UserCardProps> = ({
                 </div>
                 <p className="text-[11px] mt-2 text-gray-400 flex items-center gap-1">
                     친구 5명 <span className="text-[5px] leading-none relative top-[-1.5px]">●</span> 서버 2개
+                    <ActionTooltip side="top" align="center" label="goseungbeom5757 + #223388">
+                        <div className="w-4 h-4 ml-1 flex items-center justify-center rounded-md bg-[#313338]">
+                            <div className="w-[16px] h-[16px] flex items-center justify-center rounded-full bg-[#1ABC9C] text-black font-bold text-[12px]">
+                                #
+                            </div>
+                        </div>
+                    </ActionTooltip>
                 </p>
             </div>
         </div>

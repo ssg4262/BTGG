@@ -8,14 +8,13 @@ export const SearchBar = () => {
     return (
         <div className="flex items-center space-x-2">
             {/* 검색바 */}
-            <div className="flex items-center bg-[rgb(20,20,24)] text-white rounded-full px-3 py-2 min-w-[180px] max-w-[180px]">
+            <div className="flex items-center bg-[rgb(20,20,24)] text-white rounded-full px-4 py-2 min-w-[210px] max-w-[210px]">
                 <Search className="w-4 h-4 text-zinc-400 mr-2 shrink-0" />
-
                 <input
                     type="text"
                     value={query}
                     onChange={(e) => setQuery(e.target.value)}
-                    className="bg-transparent flex-1 min-w-0 text-sm outline-none placeholder-zinc-500"
+                    className="bg-transparent flex-1 min-w-1 text-sm outline-none placeholder-zinc-500"
                     placeholder="검색하기"
                 />
 

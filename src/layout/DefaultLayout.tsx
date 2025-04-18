@@ -15,7 +15,7 @@ export const DefaultLayout = ({ sidebar, childSide, main }: LayoutProps) => {
             </aside>
 
             {/* 자식 사이드바 (선택적) */}
-            <aside className="hidden md:flex w-[240px] flex-col bg-zinc-800">
+            <aside className="hidden md:flex w-[260px] flex-col bg-zinc-800">
                 {childSide}
             </aside>
 

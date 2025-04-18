@@ -15,7 +15,7 @@ const handleTabChange = (val : number) => {
 }
 export const MainServerSideBar = () => {
     return (
-        <div className="w-60 h-screen rounded-tl-2xl bg-[rgb(43,45,49)] text-white flex flex-col">
+        <div className="w-70 h-screen rounded-tl-2xl bg-[rgb(43,45,49)] text-white flex flex-col">
             {/*user info*/}
             <CompActionTooltip
                 component={<UserInfo/>}
@@ -23,7 +23,6 @@ export const MainServerSideBar = () => {
                 align="center"
             >
                 <div className="m-2 mt-3 mb-1">
-
                         <UserCard
                             avatarUrl={profile}
                             username="고승범"
