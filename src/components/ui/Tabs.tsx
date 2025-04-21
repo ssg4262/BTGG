@@ -26,7 +26,7 @@ export const Tabs = ({ tabs, onTabChange }: TabsProps) => {
                     onClick={() => handleClick(tab.id)}
                     className={`py-2 text-sm font-medium cursor-pointer ${
                         activeTab === tab.id
-                            ? "text-indigo-400 border-b-2 border-indigo-400"
+                            ? "text-[rgb(234,234,234)] border-b-2 border-[rgb(234,234,234)]"
                             : "text-gray-400 hover:text-gray-200"
                     }`}
                 >
