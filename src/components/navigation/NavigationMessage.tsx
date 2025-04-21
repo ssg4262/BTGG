@@ -16,7 +16,7 @@ export const NavigationMessage = () => {
 
     return (
         <ActionTooltip side="right" align="center" label="메시지">
-            <button className="group flex items-center"
+            <button className="group flex items-center cursor-pointer"
                     onClick={() => handleNavigate()}
             >
                 <div

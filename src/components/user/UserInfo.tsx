@@ -1,11 +1,13 @@
 import profile from "@/assets/img/profile/profile.png";
 import {ActionTooltip} from "@/components/ui/ActionToolTip.tsx";
+import {MoreVerticalOption} from "@/components/ui/MoreVerticalOption.tsx";
 
 export const UserInfo = () => {
     return(
         <>
-            <div className="h-[70px] bg-[rgb(99,99,99)] shadow-ml">
-                <div className="flex justify-end m-2">
+            <div className="h-[66px] shadow-ml">
+                <div className="flex justify-end m-2 mt-5">
+                    <MoreVerticalOption/>
                 </div>
             </div>
             <div className="relative">
@@ -23,7 +25,7 @@ export const UserInfo = () => {
                 </div>
             </div>
             {/* 🔹 서버 헤더 */}
-            <div className="h-[105px] flex items-center overflow-hidden  bg-[rgb(10,10,10)] ">
+            <div className="h-[120px] flex items-center overflow-hidden bg-[rgb(10,10,10)]">
                 <div className="px-2 pt-3 text-white rounded-md ml-2 mr-2">
                     <div className="flex items-center space-x-2 mb-1">
                         <span className="text-white font-bold text-lg leading-none">고승범</span>
