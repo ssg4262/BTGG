@@ -4,7 +4,7 @@ import {ActionTooltip} from "@/components/ui/ActionToolTip.tsx";
 export const UserInfo = () => {
     return(
         <>
-            <div className="h-[70px] bg-[rgb(99,99,99)] shadow-ml rounded-tl-2xl">
+            <div className="h-[70px] bg-[rgb(99,99,99)] shadow-ml">
                 <div className="flex justify-end m-2">
                 </div>
             </div>
@@ -15,17 +15,20 @@ export const UserInfo = () => {
                         <img
                             src={profile}
                             alt="프로필 이미지"
-                            className="w-16 h-16 rounded-full border-4 border-[rgb(43,45,49)]"
+                            className="w-16 h-16 rounded-full border-3 border-[rgb(10,10,10)]"
                         />
                         {/* 접속 상태 표시 */}
-                        <span className="absolute right-0 bottom-1 w-5 h-5 bg-green-500 border-2 border-[rgb(43,45,49)] rounded-full"></span>
+                        <span className="absolute right-0 bottom-1 w-5 h-5 bg-green-500 border-2 border-[rgb(10,10,10)] rounded-full"></span>
                     </div>
                 </div>
             </div>
             {/* 🔹 서버 헤더 */}
-            <div className="h-[105px] flex items-center overflow-hidden border-b bg-[rgb(34,36,42)] border-[rgb(31,33,36)]">
+            <div className="h-[105px] flex items-center overflow-hidden  bg-[rgb(10,10,10)] ">
                 <div className="px-2 pt-3 text-white rounded-md ml-2 mr-2">
-                    <p className="text-lg font-bold">고승범</p> {/* 위 간격 추가 */}
+                    <div className="flex items-center space-x-2 mb-1">
+                        <span className="text-white font-bold text-lg leading-none">고승범</span>
+                        <span className="text-gray-400 text-sm leading-tight">#223388</span>
+                    </div>
                     <div className="flex items-center gap-1">
                         <p className="text-[12px] text-white">goseungbeom5757</p>
                         <ActionTooltip side="top" align="center" label="goseungbeom5757 + #223388">

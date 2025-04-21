@@ -10,41 +10,36 @@ import {NavigationThreads} from "@/components/navigation/NavigationThreads.tsx";
 import {NavigationExplorer} from "@/components/navigation/NavigationExplorer.tsx";
 
 export const MainSideBar = () => {
-    const [servers] = useState([{
-        id:'1' , name:'고승범',imageUrl: profile
-    }, {
-        id:'2' , name:'고승범2',imageUrl:''
-    }
+    const [servers] = useState([
+        { id: "1", name: "고승범", imageUrl: profile },
+        { id: "2", name: "고승범2", imageUrl: "" },
     ]);
-    return(
+
+    return (
         <div
-            className="space-y-4 flex flex-col items-center
-            h-full text-white w-full bg-[rgb(29,31,37)]
-            py-3"
+            className="flex flex-col items-center
+      h-full w-full text-white bg-[rgb(0,0,0)] py-2 space-y-3"
         >
-            <div>
-                <NavigationMessage />
-            </div>
-            <div className = "h-[2px] bg-zinc-700 rounded-md w-10 mx-auto"/>
+            <NavigationMessage />
+
+            <div className="h-[1px] bg-zinc-700 rounded-md w-10" />
+
             <ScrollArea className="flex-1 w-full">
-                {servers.map((server) => (
-                    <div key={server.id} className="mb-4">
+                <div className="flex flex-col items-center space-y-4">
+                    {servers.map((server) => (
                         <NavigationItem
-                            id = {server.id}
-                            name = {server.name}
+                            key={server.id}
+                            id={server.id}
+                            name={server.name}
                             imageUrl={server.imageUrl}
                         />
-                    </div>
-                ))}
-                {/*서버추가버튼*/}
-                <NavigationAction/>
+                    ))}
+                    <NavigationAction />
+                    <NavigationThreads />
+                    <NavigationExplorer />
+                </div>
             </ScrollArea>
-            <div className="pb-3 mt-auto flex
-            items-center flex-col gap-y-4">
-                <NavigationThreads/>
-                <NavigationExplorer/>
-            </div>
         </div>
-    )
-}
+    );
+};
 

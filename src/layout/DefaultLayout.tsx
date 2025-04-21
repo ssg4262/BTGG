@@ -8,7 +8,7 @@ interface LayoutProps {
 
 export const DefaultLayout = ({ sidebar, childSide, main }: LayoutProps) => {
     return (
-        <div className="flex h-screen overflow-hidden bg-[rgb(48,50,56)]">
+        <div className="flex h-screen overflow-hidden bg-[rgb(25,25,28)]">
             {/* 사이드바 */}
             <aside className="hidden md:flex w-[72px] flex-col">
                 {sidebar}

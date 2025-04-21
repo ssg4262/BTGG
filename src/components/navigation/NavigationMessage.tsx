@@ -21,18 +21,18 @@ export const NavigationMessage = () => {
             >
                 <div
                     className={cn(
-                        "absolute left-0 rounded-r-full transition-all w-[4px]",
+                        "absolute left-0 rounded-r-full transition-all w-[3px]",
                         !isActive && "group-hover:h-[20px]",
                         isActive
-                            ? "h-[36px] shadow-[0_0_10px_2px_rgba(233,233,233,0.4)] bg-[rgb(255,255,255)]"
+                            ? "h-[36px] bg-[rgb(255,255,255)]"
                             : "h-[8px] opacity-80",
                         "transition-all duration-300 ease-in-out"
                     )}
                 />
                 <div
-                    className={`flex mx-3 h-[48px] w-[48px] transition-all overflow-hidden items-center justify-center
-                        ${isActive ? "rounded-[16px] bg-[rgb(88,101,242)]"
-                        : "rounded-[24px] bg-[rgb(43,45,49)] group-hover:rounded-[16px] group-hover:bg-[rgb(88,101,242)]"}
+                    className={`flex mx-3 h-[40px] w-[40px] transition-all rounded-[12px] overflow-hidden items-center justify-center
+                        ${isActive ? " bg-[rgb(88,101,242)]"
+                        : "bg-[rgb(43,45,49)] group-hover:bg-[rgb(88,101,242)]"}
                 `}
                 >
                     <MassageSVG />

@@ -33,9 +33,9 @@ export const NavigationExplorer = () => {
                     )}
                 />
                 <div
-                    className={`flex mx-3 h-[48px] w-[48px] transition-all overflow-hidden items-center justify-center
-                        ${isActive ? "rounded-[16px] bg-[rgb(88,101,242)]"
-                        : "rounded-[24px] bg-[rgb(43,45,49)] group-hover:rounded-[16px] group-hover:bg-[rgb(88,101,242)]"}
+                    className={`flex mx-3 h-[40px] w-[40px] transition-all overflow-hidden items-center justify-center
+                        ${isActive ? "rounded-[12px] bg-[rgb(88,101,242)]"
+                        : "rounded-[12px] bg-[rgb(43,45,49)] group-hover:rounded-[12px] group-hover:bg-[rgb(88,101,242)]"}
                 `}
                 >
                     <CompassSVG

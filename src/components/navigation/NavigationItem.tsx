@@ -47,9 +47,9 @@ export const NavigationItem: React.FC<NavigationItemProps> = ({
                 {/* 서버 아이콘 */}
                 <div
                     className={cn(
-                        "relative flex mx-3 h-[48px] w-[48px] rounded-[24px] " +
-                        "group-hover:rounded-[16px] transition-all overflow-hidden bg-[rgb(43,45,49)]",
-                        params?.serverId === id && "bg-[rgb(43,45,49)] text-white rounded-[16px]"
+                        "relative flex mx-3 h-[40px] w-[40px] rounded-[12px] " +
+                        "transition-all overflow-hidden bg-[rgb(43,45,49)]",
+                        params?.serverId === id && "bg-[rgb(43,45,49)] text-white rounded-[12px]"
                     )}
                 >
                     {imageUrl ? (
