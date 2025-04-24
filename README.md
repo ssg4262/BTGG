@@ -1,4 +1,5 @@
-# OXOG
+# VibeLine
+
 ![React](https://img.shields.io/badge/React-20232A?style=for-the-badge&logo=react&logoColor=61DAFB)![TypeScript](https://img.shields.io/badge/typescript-%23007ACC.svg?style=for-the-badge&logo=typescript&logoColor=white)![Recoil](https://img.shields.io/badge/Recoil-339933?style=for-the-badge&logo=Recoil&logoColor=white)![TailWindCss](https://img.shields.io/badge/TailWindCss-0067A3?style=for-the-badge&logo=TailwindCss&logoColor=white)![Vite](https://img.shields.io/badge/Vite-C49102?style=for-the-badge&logo=Vite&logoColor=white) 
 > React + TypeScript + Recoil 기반의 웹 애플리케이션  
 > 사용자 중심의 UI/UX와 확장 가능한 상태 관리 구조를 목표로 한 프론트엔드 프로젝트입니다.
