@@ -18,7 +18,7 @@ export const MainSideBar = () => {
     return (
         <div
             className="flex flex-col items-center
-      h-full w-full text-white bg-[rgb(0,0,0)] py-2 space-y-3"
+      h-full w-full text-white bg-[rgb(18,18,20)] py-2 space-y-3"
         >
             <NavigationMessage />
 

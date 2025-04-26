@@ -1,4 +1,5 @@
 import { ReactNode } from "react";
+import {UserStatusBar} from "@/components/user/UserStatusBar.tsx";
 
 interface LayoutProps {
     sidebar: ReactNode;
@@ -15,7 +16,7 @@ export const DefaultLayout = ({ sidebar, childSide, main }: LayoutProps) => {
             </aside>
 
             {/* 자식 사이드바 (선택적) */}
-            <aside className="hidden md:flex w-[260px] flex-col bg-zinc-800">
+            <aside className="hidden md:flex w-[260px] flex-col bg-[rgb(18,18,20)]">
                 {childSide}
             </aside>
 
@@ -23,6 +24,11 @@ export const DefaultLayout = ({ sidebar, childSide, main }: LayoutProps) => {
             <main className="flex-grow overflow-y-auto">
                 {main}
             </main>
+
+            {/* 유저 상태 바 */}
+            <div className="hidden md:block absolute bottom-6 left-2 z-20">
+                <UserStatusBar />
+            </div>
         </div>
     );
 }

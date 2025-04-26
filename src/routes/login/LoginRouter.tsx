@@ -1,6 +1,6 @@
 import {RouteObject} from "react-router-dom";
-import {MainLanding} from "@/pages/main/MainLanding.tsx";
+import {LoginPage} from "@/pages/login/LoginPage.tsx";
 
 export const LoginRouter : RouteObject[]  = [
-    { path: "/login", element: <MainLanding /> },
+    { path: "/login", element: <LoginPage /> },
 ]
