@@ -1,27 +1,28 @@
 // src/components/VoiceDetails.tsx
 import { useState } from "react";
+import {TextInput} from "@/components/form/TextInput.tsx";
 
 export const AuthForm = () => {
     const [tab, setTab] = useState<"connection" | "signup">("connection");
 
     return (
         <div className="w-[400px] rounded-2xl bg-[#1e1f22] p-6 text-white shadow-xl">
-            <h2 className="text-2xl font-bold mb-4">로그인</h2>
+            <h2 className="text-2xl font-bold mb-4">VIBE LINE</h2>
 
             {/* Tabs */}
             <div className="flex mb-4 text-gray-400 font-semibold">
                 <button
                     onClick={() => setTab("connection")}
-                    className={`flex-1 border-b-2 pb-2 ${
-                        tab === "connection" ? "text-white border-indigo-500" : "border-transparent"
+                    className={`flex-1 border-b-2 pb-2 cursor-pointer ${
+                        tab === "connection" ? "text-white border-white-500" : "border-transparent"
                     }`}
                 >
                     로그인
                 </button>
                 <button
                     onClick={() => setTab("signup")}
-                    className={`flex-1 border-b-2 pb-2 ${
-                        tab === "signup" ? "text-white border-indigo-500" : "border-transparent"
+                    className={`flex-1 border-b-2 pb-2 cursor-pointer  ${
+                        tab === "signup" ? "text-white border-white-500" : "border-transparent"
                     }`}
                 >
                     회원가입
@@ -31,48 +32,42 @@ export const AuthForm = () => {
             {/* signup Content */}
             {tab === "connection" && (
                 <div className="flex flex-col gap-4">
-                    <div className="flex items-center gap-2">
-                        <div className="bg-green-500 text-black rounded-full px-2 py-1 text-xs font-bold">
-                            End-to-end encrypted
-                        </div>
-                    </div>
-
-                    <p className="text-sm text-gray-300">
-                        Only you and your friends on this call can hear you. Nobody else - not even Wumpus - can listen in!
-                    </p>
 
                     {/* Voice Privacy Code */}
                     <div className="bg-[#2b2d31] p-4 rounded-md">
-                        <div className="flex justify-between items-center mb-4">
-                            <span className="font-bold text-gray-200 text-sm">Voice Privacy Code</span>
-                        </div>
+                        <div className="flex flex-col gap-6">
+                            {/* 이메일/전화번호 */}
+                            <TextInput label="이메일 또는 전화번호" placeholder="example@email.com" />
 
-                        <div className="grid grid-cols-3 gap-4 text-center font-bold text-lg text-gray-100">
-                            {/* 이메일 또는 전화번호 인풋 */}
-                            <input
-                                type="text"
-                                placeholder="이메일 또는 전화번호"
-                                className="col-span-3 md:col-span-1 bg-[#2b2d31] text-white rounded-md px-4 py-3 focus:outline-none focus:ring-2 focus:ring-indigo-500 placeholder-gray-400 text-sm"
-                            />
+                            {/* 비밀번호 */}
+                            <TextInput label="비밀번호" type="password" placeholder="비밀번호 입력" />
 
-                            {/* 비밀번호 인풋 */}
-                            <input
-                                type="password"
-                                placeholder="비밀번호"
-                                className="col-span-3 md:col-span-1 bg-[#2b2d31] text-white rounded-md px-4 py-3 focus:outline-none focus:ring-2 focus:ring-indigo-500 placeholder-gray-400 text-sm"
-                            />
+                            {/* 비밀번호 찾기 */}
+                            <div className="text-right">
+                                <button type="button" className="text-sm text-white hover:underline transition">
+                                    비밀번호를 잊으셨나요?
+                                </button>
+                            </div>
+
+                            {/* 로그인 버튼 */}
+                            <button
+                                type="submit"
+                                className="mt-4 bg-[rgb(255,255,255)] text-black hover:bg-[rgb(195,195,195)] cursor-pointer font-bold py-3 rounded-lg transition-all duration-200"
+                            >
+                                로그인
+                            </button>
                         </div>
                     </div>
 
                     <p className="text-xs text-gray-400">
-                        A new code is generated when people join or leave this call.
+                        VibeLine은 reCAPTCHA의 보호를 받으며 Google개인정보 처리방침 및 서비스약관이 적용됩니다.
                     </p>
                 </div>
             )}
 
             {/* 밑에 Text */}
             <div className="mt-8 text-center">
-                <span className="text-white font-bold text-lg">View the calls privacy codes</span>
+                <span className="text-white font-bold text-lg">VIBE LINE</span>
             </div>
         </div>
     );
