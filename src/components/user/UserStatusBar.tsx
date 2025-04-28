@@ -9,7 +9,7 @@ export const UserStatusBar = () => {
                     <img
                         src={profileImg}
                         alt="profile"
-                        className="w-12 h-12 rounded-full"
+                        className="w-11 h-11 rounded-full"
                     />
                     {/* 상태 표시 원 */}
                     <div className="absolute bottom-0 right-0 w-3 h-3 bg-green-500 rounded-full border-2 border-[#1e1f22]" />
@@ -19,7 +19,7 @@ export const UserStatusBar = () => {
                         <span className="text-lg font-medium text-white">gsb</span>
                         <span className="text-xs text-zinc-400 ml-1">#0000</span>
                     </div>
-                    <p className="text-[11px] mt-1 text-gray-400 flex items-center gap-1">
+                    <p className="text-[11px] text-gray-400 flex items-center gap-1">
                         친구 5명 <span className="text-[5px] leading-none relative top-[-1.5px]">●</span> 서버 2개
                     </p>
                 </div>

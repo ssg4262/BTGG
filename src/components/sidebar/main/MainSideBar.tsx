@@ -25,7 +25,7 @@ export const MainSideBar = () => {
             <div className="h-[1px] bg-zinc-700 rounded-md w-10" />
 
             <ScrollArea className="flex-1 w-full">
-                <div className="flex flex-col items-center space-y-4">
+                <div className="flex flex-col items-center space-y-2">
                     {servers.map((server) => (
                         <NavigationItem
                             key={server.id}

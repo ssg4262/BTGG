@@ -31,8 +31,8 @@ export const NavigationMessage = () => {
                 />
                 <div
                     className={`flex mx-3 h-[40px] w-[40px] transition-all rounded-[12px] overflow-hidden items-center justify-center
-                        ${isActive ? " bg-[rgb(88,101,242)]"
-                        : "bg-[rgb(43,45,49)] group-hover:bg-[rgb(88,101,242)]"}
+                        ${isActive ? " bg-[rgb(70,71,75)]"
+                        : "bg-[rgb(43,45,49)] group-hover:bg-[rgb(70,70,70)]"}
                 `}
                 >
                     <MassageSVG />

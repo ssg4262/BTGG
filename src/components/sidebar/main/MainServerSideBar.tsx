@@ -1,6 +1,7 @@
 "use client";
 import { SearchBar } from "@/components/ui/SearchBar.tsx";
 import { Tabs } from "@/components/ui/Tabs.tsx";
+import {ChatList} from "@/components/chat/ChatList.tsx";
 
 const tabItems = [
     { id: 1, label: "친구" },
@@ -19,10 +20,19 @@ export const MainServerSideBar = () => {
                     대화 찾기 또는 시작하기
                 </button>
             </div>
+
             <div className="px-2 mt-1 mb-1">
                 <SearchBar />
             </div>
+
+            <div className="px-1">
             <Tabs tabs={tabItems} onTabChange={handleTabChange} />
+            </div>
+
+            <div className="px-1">
+                <ChatList/>
+            </div>
+
         </div>
     );
 };
