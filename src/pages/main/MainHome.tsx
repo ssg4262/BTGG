@@ -1,14 +1,11 @@
 import {DefaultLayout} from "@/layout/DefaultLayout.tsx";
-import {MainSideBar} from "@/components/sidebar/main/MainSideBar.tsx";
-import {MainServerSideBar} from "@/components/sidebar/main/MainServerSideBar.tsx";
-import {ChatFriendsList} from "@/components/chat/ChatFriendsList.tsx";
+import {MainTopHeader} from "@/components/sidebar/main/MainTopHeader.tsx";
+
 
 export const MainHome = () => {
     return (
             <DefaultLayout
-             sidebar={<MainSideBar/>}
-             childSide={<MainServerSideBar/>}
-             main={<ChatFriendsList/>}
+             sidebar={<MainTopHeader/>}
             />
     );
 };
