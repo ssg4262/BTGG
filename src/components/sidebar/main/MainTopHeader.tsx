@@ -4,6 +4,7 @@ import { BlurSearchBar } from "@/components/ui/BlurSearchBar.tsx";
 import { BlurBtn } from "@/components/ui/BlurBtn.tsx";
 import { CategoryTabs } from "@/components/ui/CategoryTabs.tsx";
 import { CollectionList } from "@/components/card/CollectionList.tsx";
+import {darkenColor} from "@/utils/DarkenColor.ts";
 
 export const MainTopHeader = () => {
     const [isScrolled, setIsScrolled] = useState(false);
@@ -20,7 +21,7 @@ export const MainTopHeader = () => {
             className={clsx("fixed top-0 w-full z-50 transition-all duration-300")}
             style={{
                 background: bgColor
-                    ? `linear-gradient(to bottom, ${bgColor}, #0d0d0d)`
+                    ? `linear-gradient(to bottom, ${darkenColor(bgColor, 0.4)}, ${bgColor})`
                     : isScrolled
                         ? "#0d0d0d"
                         : "transparent",
