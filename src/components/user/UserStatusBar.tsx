@@ -1,6 +1,9 @@
 import profileImg from "@/assets/img/profile/profile.png";
+import {SoundSVG} from "@/assets/svg/user/SoundSVG.tsx";
+import {useState} from "react";
 
 export const UserStatusBar = () => {
+    const [active, setActive] = useState<Boolean>(false);
     return (
         <div className="bg-[rgb(32,32,36)] p-2 w-[333px] h-[73px] flex items-center justify-between rounded-md">
             {/* 프로필 + 유저 정보 */}
@@ -22,8 +25,18 @@ export const UserStatusBar = () => {
                     <p className="text-[11px] text-gray-400 flex items-center gap-1">
                         친구 5명 <span className="text-[5px] leading-none relative top-[-1.5px]">●</span> 서버 2개
                     </p>
+
                 </div>
             </div>
+            <button
+                onClick={() => setActive(!active)}
+                className="relative w-16 h-16 rounded-xl flex items-center justify-center"
+            >
+                {/*{active && (*/}
+                {/*    <div className="absolute inset-0 rounded-xl bg-red-500 blur-xl opacity-40 z-0" />*/}
+                {/*)}*/}
+                <SoundSVG color={'#a4adad'}/>
+            </button>
 
             {/* 버튼들 */}
             {/*<div className="flex items-center gap-2">*/}

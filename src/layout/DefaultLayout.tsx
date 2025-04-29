@@ -21,7 +21,7 @@ export const DefaultLayout = ({ sidebar, childSide, main }: LayoutProps) => {
             </aside>
 
             {/* 메인 콘텐츠 */}
-            <main className="flex-grow overflow-y-auto">
+            <main className="relative flex-grow overflow-y-auto">
                 {main}
             </main>
 
