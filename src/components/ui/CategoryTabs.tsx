@@ -16,7 +16,7 @@ export const CategoryTabs = () => {
     const [activeTab, setActiveTab] = useState("All");
 
     return (
-        <div className="bg-transparent mt-2 px-6">
+        <div className="bg-transparent mt-2 px-6 ml-4 mr-4">
             <div className="flex space-x-4 overflow-x-auto py-2 scrollbar-hide">
                 {categories.map((category) => (
                     <button
