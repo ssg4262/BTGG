@@ -1,70 +1,32 @@
 "use client";
 
-import { useState } from "react";
 import { BlurSearchBar } from "@/components/ui/BlurSearchBar";
-import { BlurBtn } from "@/components/ui/BlurBtn";
-import { CategoryTabs } from "@/components/ui/CategoryTabs";
-import { CollectionList } from "@/components/card/CollectionList";
-import { CompassSVG } from "@/assets/svg/ui/CompassSVG";
-import { Menu, X } from "lucide-react";
+import {ThemeToggle} from "@/components/ui/DarkModeToggle.tsx";
 
 export const MainTopHeader = () => {
-    const [isMobileMenuOpen, setIsMobileMenuOpen] = useState(false);
-
-    const toggleMobileMenu = () => setIsMobileMenuOpen(prev => !prev);
-
     return (
-        <header className="fixed top-0 w-full z-50 bg-[#0d0d0d]/80 backdrop-blur-md transition-all duration-300">
-            <div className="max-w-screen-2xl mx-auto px-6 h-16 flex items-center justify-between">
-                {/* 왼쪽: 로고 + 데스크탑 메뉴 */}
-                <div className="flex items-center space-x-5">
-                    <div className="flex flex-col text-white font-bold text-[31px] leading-none font-BlackHanSans mt-3 scale-x-[1.3]">
-                        <span>META</span>
-                        <span>DROP</span>
-                    </div>
+        <header className="fixed top-0 w-full z-50
+            bg-white/80 dark:bg-[#0d0d0d]/80
+            backdrop-blur-md transition-all duration-300
+            border-b border-black/10 dark:border-white/10">
 
-                    <nav className="hidden md:flex items-center space-x-6 text-white text-md font-semibold">
-                        <a href="#">Drops</a>
-                        <a href="#">Stats</a>
-                        <a href="#">Create</a>
-                    </nav>
+            <div className="max-w-7xl mx-auto px-4 py-3 flex items-center justify-between">
+
+                {/* 로고 / 브랜드명 */}
+                <div className="text-black dark:text-white font-semibold text-xl tracking-wide font-BlackHanSans">
+                    MetaFlux
                 </div>
 
-                {/* 가운데: 검색바 (lg 이상에서만 보임) */}
-                <div className="hidden lg:flex flex-1 justify-center">
-                    <div className="w-full max-w-md">
-                        <BlurSearchBar />
-                    </div>
+                {/* 블러 서치바 */}
+                <div className="w-full max-w-md">
+                    <BlurSearchBar />
                 </div>
 
-                {/* 오른쪽: 버튼 & 햄버거 */}
-                <div className="flex items-center space-x-3">
-                    {/* 모바일 햄버거 */}
-                    <button onClick={toggleMobileMenu} className="md:hidden text-white">
-                        {isMobileMenuOpen ? <X size={24} /> : <Menu size={24} />}
-                    </button>
-
-                    {/* 데스크탑 버튼 */}
-                    <div className="hidden md:flex items-center space-x-2">
-                        {[...Array(3)].map((_, i) => (
-                            <BlurBtn key={i} component={<CompassSVG />} />
-                        ))}
-                    </div>
+                {/* 우측 아이콘 영역 */}
+                <div className="text-black/70 dark:text-white/70 hover:text-black dark:hover:text-white transition-colors cursor-pointer">
+                    <ThemeToggle/>
                 </div>
             </div>
-
-            {/* 모바일 메뉴 */}
-            {isMobileMenuOpen && (
-                <div className="md:hidden px-6 pb-4 pt-2 bg-[#0d0d0d] text-white space-y-2">
-                    <a href="#" className="block">Drops</a>
-                    <a href="#" className="block">Stats</a>
-                    <a href="#" className="block">Create</a>
-                </div>
-            )}
-
-            {/* 카테고리 & 리스트 */}
-            <CategoryTabs />
-            <CollectionList />
         </header>
     );
 };

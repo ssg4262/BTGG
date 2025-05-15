@@ -1,6 +1,6 @@
 import { useEffect, useState } from 'react'
 
-export function useDarkMode(): [boolean, (value: boolean) => void] {
+export const useDarkMode = (): [boolean, (value: boolean) => void] => {
     const [isDark, setIsDark] = useState(() => {
         if (typeof window !== 'undefined') {
             return localStorage.theme === 'dark' || window.matchMedia('(prefers-color-scheme: dark)').matches

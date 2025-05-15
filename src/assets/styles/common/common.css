@@ -1,4 +1,5 @@
 @import "tailwindcss";
+@custom-variant dark (&:where(.dark, .dark *));
 .no-scrollbar {
     -ms-overflow-style: none; /* IE, Edge */
     scrollbar-width: none; /* Firefox */
