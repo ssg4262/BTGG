@@ -1,8 +1,19 @@
 @font-face {
-    font-family: 'BlackHanSans';
-    src: url('@/assets/font/Orbitron-VariableFont_wght.ttf') format('woff2');
+    font-family: 'FasterOne';
+    src: url('@/assets/font/FasterOne-Regular.ttf') format('woff2');
     font-weight: normal;
     font-style: normal;
+}
+
+@font-face {
+    font-family: 'BlackHanSans';
+    src: url('@/assets/font/BlackHanSans-Regular.ttf') format('woff2');
+    font-weight: normal;
+    font-style: normal;
+}
+
+.font-FasterOne {
+    font-family: 'FasterOne', sans-serif;
 }
 
 .font-BlackHanSans {
