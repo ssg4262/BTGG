@@ -2,7 +2,7 @@ const navItems = ["NFT", "Web3", "Blockchain", "All Articles"];
 
 export const LearnTopHeader = () => {
     return (
-        <header className="w-full shadow-sm">
+        <header className="w-full">
             <div className="max-w-7xl mx-auto px-6 py-4 flex items-center justify-between">
                 {/* Left - Logo + Text */}
                 <div className="flex items-center gap-2">

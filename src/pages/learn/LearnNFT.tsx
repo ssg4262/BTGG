@@ -1,7 +1,7 @@
 import ArticleCard from "@/components/card/ArticleCard.tsx";
 import {LearnTopHeader} from "@/components/sidebar/learn/LearnTopHeader.tsx";
 import {LearnLayout} from "@/layout/learn/LearnLayout.tsx";
-
+import cardIMGE from '@/assets/img/nft/Doodle.png'
 
 
 export const LearnNFT = () => {
@@ -12,7 +12,7 @@ export const LearnNFT = () => {
                 category="NFT"
                 title="What is an NFT?"
                 date="August 26, 2022"
-                imageSrc="/nft-thumbnail.png"
+                imageSrc={cardIMGE}
                 onShare={() => alert("Shared!")}
             />}
         />
