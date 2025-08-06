@@ -7,6 +7,7 @@ import {MessageCircle} from "lucide-react";
 export const MainHome = () => {
 
     return (
+        <>
             <DefaultLayout
              sidebar={<MainTopHeader />}
              topDiv={
@@ -22,6 +23,7 @@ export const MainHome = () => {
                 </>
              }
             />
-
+            {/*<ChatPopup />*/}
+        </>
     );
 };

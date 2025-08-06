@@ -9,7 +9,7 @@ export const MainTopHeader = () => {
     const [menuOpen, setMenuOpen] = useState(false);
 
     return (
-        <header className="fixed top-0 w-full z-50 bg-white text-black dark:bg-black dark:text-white border-b border-black/10 dark:border-white/10 transition-colors duration-300">
+        <header className="fixed top-0 w-full z-50 bg-white text-black dark:bg-[rgb(20,20,20)] dark:text-white border-b border-black/10 dark:border-white/10 transition-colors duration-300">
             {/* ✅ 중앙 정렬 컨테이너 */}
             <div className="w-full max-w-screen-xl mx-auto flex items-center justify-between px-4 sm:px-6 py-3">
 

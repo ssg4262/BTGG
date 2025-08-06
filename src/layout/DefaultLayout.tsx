@@ -10,7 +10,7 @@ interface LayoutProps {
 
 export const DefaultLayout = ({ sidebar, topDiv ,floating}: LayoutProps) => {
     return (
-        <div className="min-h-screen bg-white text-black dark:bg-gradient-to-b dark:from-[#0d1117] dark:to-[#1a1f2b] dark:text-white transition-colors duration-300">
+        <div className="min-h-screen bg-white text-black dark:bg-[rgb(17,17,17)]  dark:text-white transition-colors duration-300">
             <div className="flex">
                 <aside>
                     {sidebar}
