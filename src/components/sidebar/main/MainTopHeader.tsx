@@ -3,6 +3,7 @@
 import { useState } from "react";
 import { ChevronDown, Menu, X } from "lucide-react";
 import clsx from "clsx";
+import {ThemeToggle} from "@/components/theme/ThemeToggle.tsx";
 
 export const MainTopHeader = () => {
     const [menuOpen, setMenuOpen] = useState(false);
@@ -33,11 +34,7 @@ export const MainTopHeader = () => {
 
                 {/* 우측: 드롭다운 영역 (약간 좌측으로 당김) */}
                 <div className="flex items-center gap-2 md:gap-3">
-                    <button className="flex items-center gap-1 bg-neutral-900 px-2.5 py-1 rounded text-xs">
-                        <span className="text-sm">🇰🇷</span>
-                        <span>KRW</span>
-                        <ChevronDown className="w-3.5 h-3.5" />
-                    </button>
+                    <ThemeToggle/>
 
                     {/* 햄버거 (모바일 전용) */}
                     <button

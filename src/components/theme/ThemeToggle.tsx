@@ -1,15 +1,24 @@
-import { Moon, Sun } from 'lucide-react'
 import { useTheme } from '@/providers/theme/ThemeProvider.tsx'
+import clsx from 'clsx'
 
 export const ThemeToggle = () => {
     const [isDark, setIsDark] = useTheme()
 
     return (
         <button
-            className="p-2 rounded-full hover:bg-gray-200 dark:hover:bg-gray-700 transition"
             onClick={() => setIsDark(!isDark)}
+            className={clsx(
+                'w-12 h-6 rounded-full flex items-center px-1 transition-colors duration-300',
+                isDark ? 'bg-gray-700' : 'bg-gray-300'
+            )}
         >
-            {isDark ? <Sun size={20} /> : <Moon size={20} />}
+            <div
+                className={clsx(
+                    'w-4 h-4 rounded-full bg-white shadow-md transform transition-transform duration-300',
+                    isDark ? 'translate-x-0' : 'translate-x-6'
+                )}
+            >
+            </div>
         </button>
     )
 }
