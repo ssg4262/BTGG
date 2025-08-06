@@ -3,7 +3,7 @@
     "module": "ESNext",
     "target": "ESNext",
     "moduleResolution": "bundler",
-    "types": ["tailwindcss/tailwind-config"]
+//    "types": ["tailwindcss/tailwind-config"]
   },
   "include": ["tailwind.config.ts"]
 }
