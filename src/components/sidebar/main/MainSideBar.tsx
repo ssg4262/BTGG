@@ -182,10 +182,6 @@ export const MainSideBar = ({
                     <div className="h-1.5 w-10 rounded-full bg-zinc-300 dark:bg-white/20" />
                 </div>
 
-                {/* lime strip */}
-                <div className="h-[28px] border-b border-zinc-200 relative dark:border-white/10 bg-zinc-100 dark:bg-[#1a2c00] rounded-t-xl">
-                    <span className="absolute right-0 top-0 h-full w-[3px] bg-[#B6FF34]" />
-                </div>
 
                 <div className="px-3 pb-3">
                     <div className="max-h-[60vh] overflow-y-auto [scrollbar-width:none] [-ms-overflow-style:none] [&::-webkit-scrollbar]:hidden">
