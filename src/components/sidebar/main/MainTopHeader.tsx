@@ -14,7 +14,7 @@ export const MainTopHeader = () => {
             <div className="w-full max-w-screen-xl mx-auto flex items-center justify-between px-4 sm:px-6 py-3">
 
                 {/* 좌측: 로고 (약간 우측으로 띄움) */}
-                <div className="flex items-center text-[13px] tracking-normal space-x-0.5 font-BlackHanSans">
+                <div className="flex items-center text-[16px] tracking-normal space-x-0.5 font-BlackHanSans">
                     <span className="hover:text-gray-300">BT</span>
                     <span className="text-lime-400">{'</>'}</span>
                     <span className="hover:text-gray-300">GG</span>
