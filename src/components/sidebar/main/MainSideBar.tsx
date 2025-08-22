@@ -1,17 +1,25 @@
 // src/components/sidebar/main/MainSideBar.tsx
+"use client";
+
 import { useEffect, useMemo, useRef, useState } from "react";
 import {
-    BarChart3, Star, Zap, RefreshCcw,
-    ArrowLeft, PanelLeftClose, PanelLeftOpen, Menu
-} from "lucide-react";
+    // iOS 느낌의 Heroicons (outline)
+    ArrowTrendingUpIcon,
+    StarIcon,
+    ArrowsRightLeftIcon,
+    CurrencyDollarIcon,
+    ArrowUturnLeftIcon,
+    ChevronDoubleLeftIcon,
+    ChevronDoubleRightIcon,
+    Bars3Icon,
+} from "@heroicons/react/24/outline";
 
-/** 데스크탑: 좌측 고정 레일(56↔272) / 모바일: iOS 바텀시트(플로팅) */
 type ItemKey = "crypto" | "fav" | "swap" | "fx";
 
 type Props = {
-    headerHeightPx?: number;   // TopNav 높이(기본 56)
-    defaultOpen?: boolean;     // 데스크탑 레일 시작 상태
-    defaultActive?: ItemKey;   // 초기 활성 메뉴
+    headerHeightPx?: number;
+    defaultOpen?: boolean;
+    defaultActive?: ItemKey;
     onChange?: (key: ItemKey) => void;
 };
 
@@ -21,14 +29,15 @@ export const MainSideBar = ({
                                 defaultActive = "crypto",
                                 onChange,
                             }: Props) => {
-    /* ───────── state ───────── */
-    const [open, setOpen] = useState(defaultOpen); // desktop rail
-    const [sheetOpen, setSheetOpen] = useState(false); // mobile sheet
+    const [open, setOpen] = useState(defaultOpen);
+    const [sheetOpen, setSheetOpen] = useState(false);
     const [active, setActive] = useState<ItemKey>(defaultActive);
 
     useEffect(() => {
         document.body.style.overflow = sheetOpen ? "hidden" : "";
-        return () => { document.body.style.overflow = ""; };
+        return () => {
+            document.body.style.overflow = "";
+        };
     }, [sheetOpen]);
 
     useEffect(() => {
@@ -38,25 +47,27 @@ export const MainSideBar = ({
     }, [sheetOpen]);
 
     const items = useMemo(
-        () => ([
-            { key: "crypto" as const, label: "암호화폐", Icon: BarChart3 },
-            { key: "fav"    as const, label: "내 관심 목록", Icon: Star },
-            { key: "swap"   as const, label: "교환", Icon: Zap },
-            { key: "fx"     as const, label: "환율", Icon: RefreshCcw },
-        ]),
-        []
+        () => [
+            { key: "crypto" as const, label: "암호화폐", Icon: ArrowTrendingUpIcon },
+            { key: "fav" as const, label: "내 관심 목록", Icon: StarIcon },
+            { key: "swap" as const, label: "교환", Icon: ArrowsRightLeftIcon },
+            { key: "fx" as const, label: "환율", Icon: CurrencyDollarIcon },
+        ],
+        [],
     );
 
-    const select = (k: ItemKey) => { setActive(k); onChange?.(k); };
+    const select = (k: ItemKey) => {
+        setActive(k);
+        onChange?.(k);
+    };
 
     const top = `${headerHeightPx}px`;
     const h = `calc(100vh - ${headerHeightPx}px)`;
-    const wClosed = 56;
+    const wClosed = 64;
     const wOpen = 272;
 
-    /* ───────── common list ───────── */
     const List = ({ wide }: { wide: boolean }) => (
-        <div className="py-2 overflow-y-auto [scrollbar-width:none] [-ms-overflow-style:none] [&::-webkit-scrollbar]:hidden">
+        <div className="py-2">
             {items.map(({ key, label, Icon }) => {
                 const on = key === active;
                 return (
@@ -64,15 +75,14 @@ export const MainSideBar = ({
                         key={key}
                         onClick={() => select(key)}
                         className={[
-                            "relative w-full h-11 px-3 flex items-center gap-3 text-sm",
+                            "relative w-full h-10 px-2.5 flex items-center gap-3 text-sm rounded-md transition-colors",
                             wide ? "justify-start" : "justify-center",
                             on
-                                ? "bg-zinc-200 text-zinc-900 dark:bg-[#1A1C19] dark:text-white"
-                                : "text-zinc-700 hover:bg-zinc-100 dark:text-white/90 dark:hover:bg-white/5",
+                                ? "bg-black/10 text-black dark:bg-white/10 dark:text-white"
+                                : "text-zinc-700 hover:bg-zinc-100 dark:text-zinc-300 dark:hover:bg-white/5",
                         ].join(" ")}
                     >
-                        {on && <span className="absolute right-0 top-0 h-full w-[3px] bg-[#B6FF34]" />}
-                        <Icon className="size-5 shrink-0" />
+                        <Icon className="h-5 w-5 shrink-0 opacity-90" />
                         {wide && <span className="truncate">{label}</span>}
                     </button>
                 );
@@ -80,51 +90,63 @@ export const MainSideBar = ({
         </div>
     );
 
-    /* ───────── desktop rail ───────── */
     const DesktopRail = (
         <aside
-            className="hidden lg:block sticky overflow-hidden transition-[width] duration-200
-                 bg-zinc-50 border-r border-zinc-200 text-zinc-900
-                 dark:bg-[#151615] dark:border-white/10 dark:text-white"
+            className={[
+                "hidden lg:flex flex-col",
+                "sticky overflow-hidden transition-[width] duration-200",
+                "bg-white text-black border-r border-zinc-200",
+                "dark:bg-black dark:text-white dark:border-white/10",
+            ].join(" ")}
             style={{ top, height: h, width: open ? wOpen : wClosed }}
         >
-            <List wide={open} />
+            <div className="h-2 shrink-0" />
 
-            <div className="mt-auto">
+            <div className="flex-1 overflow-y-auto [scrollbar-width:none] [-ms-overflow-style:none] [&::-webkit-scrollbar]:hidden">
+                <List wide={open} />
+            </div>
+
+            <div className="shrink-0">
                 <button
                     className={[
-                        "w-full h-12 px-3 flex items-center gap-3 text-sm",
+                        "w-full h-10 px-2.5 flex items-center gap-3 text-sm rounded-md transition-colors",
+                        "text-zinc-700 hover:bg-zinc-100 dark:text-zinc-300 dark:hover:bg-white/5",
                         open ? "justify-start" : "justify-center",
-                        "text-zinc-700 hover:bg-zinc-100 dark:text-white/80 dark:hover:bg-white/5",
                     ].join(" ")}
                     onClick={() => select("crypto")}
-                    title="뒤로가기"
                 >
-                    <ArrowLeft className="size-5" />
-                    {open && <span>뒤로가기</span>}
+                    <ArrowUturnLeftIcon className="h-5 w-5" />
+                    {open && <span className="truncate">뒤로가기</span>}
                 </button>
-                <div className="h-px bg-zinc-200 dark:bg-white/10" />
+
+                <div className="h-px bg-zinc-200 dark:bg-white/10 my-1" />
+
                 <button
                     className={[
-                        "w-full h-12 px-3 flex items-center gap-3 text-sm",
+                        "w-full h-10 px-2.5 flex items-center gap-3 text-sm rounded-md transition-colors",
+                        "text-zinc-700 hover:bg-zinc-100 dark:text-zinc-300 dark:hover:bg-white/5",
                         open ? "justify-start" : "justify-center",
-                        "text-zinc-700 hover:bg-zinc-100 dark:text-white/80 dark:hover:bg-white/5",
                     ].join(" ")}
-                    onClick={() => setOpen(v => !v)}
-                    title={open ? "메뉴 접기" : "메뉴 열기"}
+                    onClick={() => setOpen((v) => !v)}
                 >
-                    {open ? <PanelLeftClose className="size-5" /> : <PanelLeftOpen className="size-5" />}
-                    {open && <span>{open ? "메뉴 접기" : "메뉴 열기"}</span>}
+                    {open ? (
+                        <>
+                            <ChevronDoubleLeftIcon className="h-5 w-5" />
+                            <span className="truncate">메뉴 접기</span>
+                        </>
+                    ) : (
+                        <ChevronDoubleRightIcon className="h-5 w-5" />
+                    )}
                 </button>
             </div>
         </aside>
     );
 
-    /* ───────── mobile bottom sheet ───────── */
-    // swipe to close
     const startY = useRef<number | null>(null);
     const translate = useRef(0);
-    const onTouchStart = (e: React.TouchEvent) => { startY.current = e.touches[0].clientY; };
+    const onTouchStart = (e: React.TouchEvent) => {
+        startY.current = e.touches[0].clientY;
+    };
     const onTouchMove = (e: React.TouchEvent) => {
         if (startY.current == null) return;
         const dy = e.touches[0].clientY - startY.current;
@@ -134,26 +156,25 @@ export const MainSideBar = ({
     const onTouchEnd = (e: React.TouchEvent) => {
         const dy = translate.current;
         (e.currentTarget as HTMLDivElement).style.transform = "";
-        startY.current = null; translate.current = 0;
+        startY.current = null;
+        translate.current = 0;
         if (dy > 80) setSheetOpen(false);
     };
 
     const MobileFloating = (
         <>
-            {/* 좌하단 고정 iOS 스타일 버튼 */}
             <button
                 onClick={() => setSheetOpen(true)}
-                aria-label="메뉴 열기"
                 className="fixed bottom-5 left-5 z-40 lg:hidden
                    w-14 h-14 rounded-2xl
-                   bg-white dark:bg-[#1A1C19]
-                   flex items-center justify-center
-                   shadow-md active:scale-95 transition-transform"
+                   bg-white text-black dark:bg-black dark:text-white
+                   border border-zinc-200 dark:border-white/10
+                   shadow-lg flex items-center justify-center
+                   active:scale-95 transition-transform"
             >
-                <Menu className="size-6 text-zinc-700 dark:text-white" />
+                <Bars3Icon className="h-6 w-6" />
             </button>
 
-            {/* overlay */}
             <div
                 className={[
                     "fixed inset-0 z-40 bg-black/50 transition-opacity duration-200 lg:hidden",
@@ -162,14 +183,12 @@ export const MainSideBar = ({
                 onClick={() => setSheetOpen(false)}
             />
 
-            {/* sheet */}
             <div
                 role="dialog"
-                aria-modal="true"
-                aria-label="메뉴"
                 className={[
                     "fixed inset-x-0 bottom-0 z-50 lg:hidden",
-                    "rounded-t-2xl bg-zinc-50 text-zinc-900 dark:bg-[#151615] dark:text-white shadow-2xl",
+                    "rounded-t-2xl bg-white text-black dark:bg-black dark:text-white",
+                    "border-t border-zinc-200 dark:border-white/10 shadow-2xl",
                     "transition-transform duration-200",
                     sheetOpen ? "translate-y-0" : "translate-y-full",
                 ].join(" ")}
@@ -179,18 +198,17 @@ export const MainSideBar = ({
                 onTouchEnd={onTouchEnd}
             >
                 <div className="py-3 grid place-items-center">
-                    <div className="h-1.5 w-10 rounded-full bg-zinc-300 dark:bg-white/20" />
+                    <div className="h-1.5 w-10 rounded-full bg-zinc-400 dark:bg-white/20" />
                 </div>
 
-
                 <div className="px-3 pb-3">
-                    <div className="max-h-[60vh] overflow-y-auto [scrollbar-width:none] [-ms-overflow-style:none] [&::-webkit-scrollbar]:hidden">
+                    <div className="max-h-[60vh] overflow-y-auto">
                         <List wide />
                     </div>
 
                     <div className="mt-2 border-t border-zinc-200 dark:border-white/10">
                         <button
-                            className="w-full h-12 px-4 text-left text-sm text-zinc-700 hover:bg-zinc-100 dark:text-white/80 dark:hover:bg-white/5"
+                            className="w-full h-12 px-4 text-left text-sm text-zinc-700 hover:text-black/80 dark:text-zinc-300 dark:hover:text-white hover:bg-zinc-100 dark:hover:bg-white/5 rounded-md"
                             onClick={() => setSheetOpen(false)}
                         >
                             닫기
@@ -203,10 +221,7 @@ export const MainSideBar = ({
 
     return (
         <>
-            {/* 데스크탑(그리드 컬럼 차지) */}
             {DesktopRail}
-
-            {/* 모바일 플로팅(그리드 밖 고정) */}
             {MobileFloating}
         </>
     );

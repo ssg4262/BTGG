@@ -33,7 +33,7 @@ export const MainSubSideBar = ({
             className={[
                 // 라이트/다크 공통 카드 스타일
                 "text-sm bg-white border border-zinc-200 text-zinc-900",
-                "dark:bg-[#0F1311] dark:border-white/10 dark:text-white",
+                "dark:bg-black dark:border-white/10 dark:text-white",
                 // 사이드바 모드: 좌고정용 레이아웃
                 isSidebar ? "flex flex-col" : "rounded-xl" // 모바일 메인 카드이면 라운드
             ].join(" ")}
@@ -69,7 +69,7 @@ export const MainSubSideBar = ({
                         <span className="text-xs text-zinc-500 dark:text-white/70">{provider} 제공 가격 데이터</span>
                     </div>
 
-                    <button className="mt-3 w-full h-10 rounded-md bg-emerald-600 text-white dark:bg-[#A7FF4B] dark:text-black font-semibold inline-flex items-center justify-center gap-2">
+                    <button className="mt-3 w-full h-10 rounded-md bg-black text-white dark:bg-[#A7FF4B] dark:text-black font-semibold inline-flex items-center justify-center gap-2">
                         구입하다 <ArrowUpRight className="size-4" />
                     </button>
                 </div>
@@ -152,7 +152,7 @@ export const MainSubSideBar = ({
                         </div>
                     </div>
 
-                    <button className="w-full h-10 rounded-md bg-emerald-600 text-white dark:bg-[#A7FF4B] dark:text-black font-semibold mb-3">
+                    <button className="w-full h-10 rounded-md bg-black text-white dark:bg-[#A7FF4B] dark:text-black font-semibold mb-3">
                         암호화폐-법정화폐 환산
                     </button>
 

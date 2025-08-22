@@ -12,10 +12,41 @@
     font-style: normal;
 }
 
+@font-face {
+    font-family: 'Bungee';
+    src: url('@/assets/font/Bungee-Regular.ttf') format('woff2');
+    font-weight: normal;
+    font-style: normal;
+}
+
+@font-face {
+    font-family: 'NotoSans';
+    src: url('@/assets/font/NotoSansKR-VariableFont_wght.ttf') format('woff2');
+    font-weight: normal;
+    font-style: normal;
+}
+@font-face {
+    font-family: 'ArchivoBlack';
+    src: url('@/assets/font/ArchivoBlack-Regular.ttf') format('woff2');
+    font-weight: normal;
+    font-style: normal;
+}
+
 .font-FasterOne {
     font-family: 'FasterOne', sans-serif;
 }
 
 .font-BlackHanSans {
     font-family: 'BlackHanSans', sans-serif;
+}
+
+.font-Bungee {
+    font-family: 'Bungee', sans-serif;
+}
+
+.font-noto-sans {
+    font-family: 'NotoSans', sans-serif;
+}
+.font-archivo-black {
+    font-family: 'ArchivoBlack', sans-serif;
 }
