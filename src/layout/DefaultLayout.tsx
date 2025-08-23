@@ -51,7 +51,7 @@ export const DefaultLayout = ({
     };
 
     return (
-        <div className="min-h-screen bg-white text-zinc-900 dark:bg-[#0C0F0D] dark:text-white">
+        <div className="min-h-screen bg-white text-zinc-900 dark:bg-black dark:text-white">
             {topnav}
 
             {/* 모바일: 메인 상단 카드 */}
