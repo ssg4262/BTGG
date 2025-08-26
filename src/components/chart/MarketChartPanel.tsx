@@ -15,7 +15,10 @@ import {
     ReferenceLine,
     TooltipProps,
 } from "recharts";
-import type { ValueType, NameType } from "recharts/types/component/DefaultTooltipContent";
+import type {
+    ValueType,
+    NameType,
+} from "recharts/types/component/DefaultTooltipContent";
 import {
     Copy,
     Menu,
@@ -27,10 +30,9 @@ import {
     Settings,
 } from "lucide-react";
 
-/* ─────────────────── Settings ───────────────────
-   이 두 값만 바꾸면 다른 코인을 그대로 적용 가능 */
-const BINANCE_SYMBOL = "BTCUSDT";  // 예: ETHUSDT
-const COINGECKO_ID  = "bitcoin";   // 예: ethereum
+/* ─────────────────── Settings ─────────────────── */
+const BINANCE_SYMBOL = "BTCUSDT"; // 예: ETHUSDT
+const COINGECKO_ID = "bitcoin";   // 예: ethereum
 
 /* ─────────────────── Types ─────────────────── */
 type RangeKey = "All" | "1y" | "30d" | "7d" | "1d" | "1h";
@@ -49,42 +51,6 @@ interface HeaderMeta {
     twitterUrl?: string;
     telegramUrl?: string;
 }
-
-/* ─────────────────── Fetch (Binance) ─────────────────── */
-const RANGE_TO_BINANCE: Record<
-    RangeKey,
-    { interval: "1m" | "5m" | "15m" | "1h" | "4h" | "1d"; limit: number }
-> = {
-    "1h":  { interval: "1m",  limit: 60 },
-    "1d":  { interval: "15m", limit: 96 },
-    "7d":  { interval: "1h",  limit: 7 * 24 },
-    "30d": { interval: "4h",  limit: 30 * 6 },
-    "1y":  { interval: "1d",  limit: 365 },
-    "All": { interval: "1d",  limit: 1000 },
-};
-
-const binanceUrl = (rk: RangeKey) => {
-    const { interval, limit } = RANGE_TO_BINANCE[rk];
-    return `https://api.binance.com/api/v3/klines?symbol=${BINANCE_SYMBOL}&interval=${interval}&limit=${limit}`;
-};
-
-const fetchKlines = async (url: string): Promise<Candle[]> => {
-    const r = await fetch(url, { cache: "no-store" });
-    if (!r.ok) throw new Error(`Binance error: ${r.status}`);
-    const raw = (await r.json()) as [number, string, string, string, string, string, number][];
-    return raw.map((k) => ({
-        t: k[0],
-        o: parseFloat(k[1]),
-        h: parseFloat(k[2]),
-        l: parseFloat(k[3]),
-        c: parseFloat(k[4]),
-        v: parseFloat(k[5]),
-    }));
-};
-
-/* ─────────────────── Fetch (CoinGecko /coins/{id}) ───────────────────
-   CORS 회피를 위해 기본 경로를 '/cg' 로 설정 (Vite/Next 프록시 사용 권장) */
-const CG_BASE = "/cg"; // 필요시 'https://api.coingecko.com' 으로 바꾸되 CORS 주의
 
 type CgInfo = {
     name: string;
@@ -105,7 +71,66 @@ type CgInfo = {
     };
 };
 
+type Binance24h = {
+    priceChangePercent: string; // "2.34"
+    lastPrice: string;          // "67890.12"
+    volume: string;             // base asset volume
+    quoteVolume: string;        // quote asset volume (USDT 기준)
+};
+
+/* ─────────────────── Fetchers ─────────────────── */
+// klines
+const RANGE_TO_BINANCE: Record<
+    RangeKey,
+    { interval: "1m" | "5m" | "15m" | "1h" | "4h" | "1d"; limit: number }
+> = {
+    "1h":  { interval: "1m",  limit: 60 },
+    "1d":  { interval: "15m", limit: 96 },
+    "7d":  { interval: "1h",  limit: 7 * 24 },
+    "30d": { interval: "4h",  limit: 30 * 6 },
+    "1y":  { interval: "1d",  limit: 365 },
+    "All": { interval: "1d",  limit: 1000 },
+};
+
+const binanceKlinesUrl = (rk: RangeKey) => {
+    const { interval, limit } = RANGE_TO_BINANCE[rk];
+    return `https://api.binance.com/api/v3/klines?symbol=${BINANCE_SYMBOL}&interval=${interval}&limit=${limit}`;
+};
+
+const fetchKlines = async (url: string): Promise<Candle[]> => {
+    const r = await fetch(url, { cache: "no-store" });
+    if (!r.ok) throw new Error(`Binance error: ${r.status}`);
+    const raw = (await r.json()) as [number, string, string, string, string, string, number][];
+    return raw.map((k) => ({
+        t: k[0],
+        o: parseFloat(k[1]),
+        h: parseFloat(k[2]),
+        l: parseFloat(k[3]),
+        c: parseFloat(k[4]),
+        v: parseFloat(k[5]),
+    }));
+};
+
+// 24h ticker (CORS OK)
+const binance24hUrl = `https://api.binance.com/api/v3/ticker/24hr?symbol=${BINANCE_SYMBOL}`;
+const fetch24h = async (url: string): Promise<Binance24h> => {
+    const r = await fetch(url, { cache: "no-store" });
+    if (!r.ok) throw new Error(`Binance 24h error: ${r.status}`);
+    const j = await r.json();
+    return {
+        priceChangePercent: j.priceChangePercent,
+        lastPrice: j.lastPrice,
+        volume: j.volume,
+        quoteVolume: j.quoteVolume,
+    };
+};
+
+// CoinGecko (로컬 개발에서만 프록시 사용)
+const isDev = import.meta.env.DEV;
+const CG_BASE = isDev ? "/cg" : ""; // 배포에서는 XHR 호출 안 함!
+
 const fetchCgInfo = async (id: string): Promise<CgInfo> => {
+    if (!isDev) throw new Error("CG disabled in production");
     const url =
         `${CG_BASE}/api/v3/coins/${id}` +
         `?localization=false&tickers=false&community_data=false&developer_data=false&sparkline=false`;
@@ -126,7 +151,7 @@ const nfUSDCompact = (n: number): string =>
         maximumFractionDigits: 2,
     }).format(n);
 
-const pct = (n: number): string => `${n >= 0 ? "+" : ""}${n.toFixed(1)}%`;
+const pctFmt = (n: number): string => `${n >= 0 ? "+" : ""}${n.toFixed(2)}%`;
 
 const tickDate = (ts: number): string => {
     const d = new Date(ts);
@@ -146,7 +171,6 @@ const ema = (arr: number[], period: number): Array<number | null> => {
     return out;
 };
 
-/* ─────────────────── Hooks ─────────────────── */
 const useIsMobile = () => {
     const [m, setM] = useState<boolean>(() => (typeof window !== "undefined" ? window.innerWidth < 640 : false));
     useEffect(() => {
@@ -158,13 +182,17 @@ const useIsMobile = () => {
 };
 
 /* ─────────────────── Tooltip ─────────────────── */
-// @ts-ignore
-const ChartTooltip: React.FC<TooltipProps<ValueType, NameType>> = ({ active, payload, label }) => {
-    if (!active || !payload || payload.length === 0) return null;
-    const d = new Date(label as number);
+type TTProps = TooltipProps<ValueType, NameType> & {
+    payload?: Array<{ payload: Candle }>;
+    label?: number;
+};
+
+const ChartTooltip: React.FC<TTProps> = ({ active, payload, label }) => {
+    if (!active || !payload || payload.length === 0 || !label) return null;
+    const d = new Date(label);
     const hh = String(d.getHours()).padStart(2, "0");
     const mm = String(d.getMinutes()).padStart(2, "0");
-    const price = (payload[0].payload as Candle & { sma7?: number | null }).c;
+    const price = (payload[0].payload as Candle).c;
     return (
         <div className="rounded-lg border border-white/10 bg-black/80 px-3 py-2 text-xs text-white backdrop-blur">
             <div className="mb-1 font-semibold">
@@ -261,40 +289,55 @@ export const MarketChartPanel: React.FC = () => {
     const [showEMA, setShowEMA] = useState(true);
     const isMobile = useIsMobile();
 
-    // Binance 차트 데이터
-    const { data: candles = [], error, isLoading } = useSWR(binanceUrl(range), fetchKlines, {
-        refreshInterval: 180_000,
-        revalidateOnFocus: false,
-    });
+    // Binance 차트
+    const { data: candles = [], error, isLoading } = useSWR(
+        binanceKlinesUrl(range),
+        fetchKlines,
+        { refreshInterval: 180_000, revalidateOnFocus: false }
+    );
 
-    // CoinGecko 메타 데이터
-    const { data: cg, error: cgErr, isLoading: cgLoading } = useSWR<CgInfo>(
-        ["cg", COINGECKO_ID],
+    // Binance 24h (배포에서도 사용)
+    const { data: stat } = useSWR<Binance24h>(
+        binance24hUrl,
+        fetch24h,
+        { refreshInterval: 180_000, revalidateOnFocus: false }
+    );
+
+    // CoinGecko (로컬 개발에서만 사용)
+    const { data: cg } = useSWR<CgInfo>(
+        isDev ? ["cg", COINGECKO_ID] : null,
         () => fetchCgInfo(COINGECKO_ID),
         { refreshInterval: 180_000, revalidateOnFocus: false }
     );
 
-    // 헤더 메타(실데이터)
+    // 메타 구성
     const meta: HeaderMeta = useMemo(() => {
-        const homepage = cg?.links?.homepage?.find((x) => x && x.trim().length > 0) ?? undefined;
-        const twitter = cg?.links?.twitter_screen_name ? `https://twitter.com/${cg.links.twitter_screen_name}` : undefined;
-        const telegram = cg?.links?.telegram_channel_identifier ? `https://t.me/${cg.links.telegram_channel_identifier}` : undefined;
-
-        const chain =
-            cg?.asset_platform_id?.toUpperCase() ??
-            (cg?.name?.toUpperCase().includes("BITCOIN") ? "BITCOIN" : "NATIVE");
-
-        const type = cg?.detail_platforms && Object.keys(cg.detail_platforms).length > 0 ? "TOKEN" : "COIN";
-
+        if (cg) {
+            const homepage = cg.links?.homepage?.find((x) => x && x.trim().length > 0) ?? undefined;
+            const twitter = cg.links?.twitter_screen_name ? `https://twitter.com/${cg.links.twitter_screen_name}` : undefined;
+            const telegram = cg.links?.telegram_channel_identifier ? `https://t.me/${cg.links.telegram_channel_identifier}` : undefined;
+            const chain =
+                cg.asset_platform_id?.toUpperCase() ??
+                (cg.name?.toUpperCase().includes("BITCOIN") ? "BITCOIN" : "NATIVE");
+            const type = cg.detail_platforms && Object.keys(cg.detail_platforms).length > 0 ? "TOKEN" : "COIN";
+            return {
+                name: cg.name ?? BINANCE_SYMBOL.replace("USDT", ""),
+                symbol: (cg.symbol ?? BINANCE_SYMBOL.slice(0, -4)).toUpperCase(),
+                chainBadge: chain,
+                typeBadge: type,
+                logoUrl: cg.image?.small ?? `https://cryptoicons.org/api/icon/${BINANCE_SYMBOL.slice(0, -4).toLowerCase()}/64`,
+                siteUrl: homepage,
+                twitterUrl: twitter,
+                telegramUrl: telegram,
+            };
+        }
+        // 프로덕션 fallback(이미지 CDN 사용)
         return {
-            name: cg?.name ?? BINANCE_SYMBOL.replace("USDT", ""),
-            symbol: (cg?.symbol ?? BINANCE_SYMBOL.slice(0, -4)).toUpperCase(),
-            chainBadge: chain,
-            typeBadge: type,
-            logoUrl: cg?.image?.small ?? "/favicon.ico",
-            siteUrl: homepage,
-            twitterUrl: twitter,
-            telegramUrl: telegram,
+            name: BINANCE_SYMBOL.replace("USDT", ""),
+            symbol: BINANCE_SYMBOL.slice(0, -4),
+            chainBadge: "NATIVE",
+            typeBadge: "COIN",
+            logoUrl: `https://cryptoicons.org/api/icon/${BINANCE_SYMBOL.slice(0, -4).toLowerCase()}/64`, // 이미지 호출은 CORS OK
         };
     }, [cg]);
 
@@ -312,11 +355,11 @@ export const MarketChartPanel: React.FC = () => {
         [candles, sma7, ema25]
     );
 
-    const last = candles.at(-1)?.c ?? (cg?.market_data?.current_price?.usd ?? 0);
+    // 현재가/변동(배포에서도 동작: Binance 24h 기준)
+    const last = stat ? parseFloat(stat.lastPrice) : (candles.at(-1)?.c ?? 0);
     const first = candles[0]?.c ?? last;
-    const diffPct = cg?.market_data?.price_change_percentage_24h ?? ((last - first) / (first || 1)) * 100;
+    const diffPct = stat ? parseFloat(stat.priceChangePercent) : ((last - first) / (first || 1)) * 100;
 
-    // 팔레트
     const pal = {
         shell: "bg-black text-white",
         grid: "rgba(255,255,255,0.06)",
@@ -339,7 +382,7 @@ export const MarketChartPanel: React.FC = () => {
                         diffPct >= 0 ? "bg-emerald-500/15 text-emerald-300" : "bg-rose-500/15 text-rose-300"
                     }`}
                 >
-          {pct(diffPct)}
+          {pctFmt(diffPct)}
         </span>
                 <div className="ml-auto flex flex-wrap items-center gap-2 text-xs shrink-0">
                     <button onClick={() => setUseLog((s) => !s)} className="rounded-md bg-white/5 px-2 py-1 hover:bg-white/10" title="축 스케일">
@@ -354,8 +397,8 @@ export const MarketChartPanel: React.FC = () => {
                     <button onClick={() => setShowEMA((s) => !s)} className="rounded-md bg-white/5 px-2 py-1 hover:bg-white/10">
                         EMA 25
                     </button>
-                    {(isLoading || cgLoading) && <span className="text-white/60">갱신 중…</span>}
-                    {(error || cgErr) && <span className="text-rose-400">데이터 오류</span>}
+                    {isLoading && <span className="text-white/60">갱신 중…</span>}
+                    {error && <span className="text-rose-400">데이터 오류</span>}
                 </div>
             </div>
 
@@ -390,7 +433,9 @@ export const MarketChartPanel: React.FC = () => {
                                 tick={{ fill: pal.tick, fontSize: isMobile ? 10 : 12 }}
                                 axisLine={{ stroke: pal.axis }}
                                 tickLine={false}
-                                tickFormatter={(n: number) => (isMobile ? nfUSDCompact(n) : n < 1 ? n.toExponential(2) : `$${n.toLocaleString()}`)}
+                                tickFormatter={(n: number) =>
+                                    isMobile ? nfUSDCompact(n) : n < 1 ? n.toExponential(2) : `$${n.toLocaleString()}`
+                                }
                             />
                             {showVolume && <YAxis yAxisId="vol" hide domain={[0, "auto"]} />}
 
@@ -453,32 +498,32 @@ export const MarketChartPanel: React.FC = () => {
                     </ResponsiveContainer>
                 </div>
 
-                {/* 하단 메트릭: 실데이터 */}
+                {/* 하단 메트릭: 배포에서도 모두 표시 가능(Binance 24h 사용) */}
                 <div className="mt-4 grid grid-cols-2 sm:grid-cols-4 gap-4 text-sm">
                     <div>
                         <div className="text-white/60">체인</div>
                         <div className="mt-1 font-semibold">{meta.chainBadge}</div>
                     </div>
                     <div>
-                        <div className="text-white/60">시가총액</div>
-                        <div className="mt-1 font-semibold">
-                            {cg?.market_data?.market_cap?.usd != null ? nfUSD(cg.market_data.market_cap.usd!) : "—"}
+                        <div className="text-white/60">마지막 가격</div>
+                        <div className="mt-1 font-semibold">{nfUSD(last)}</div>
+                    </div>
+                    <div>
+                        <div className="text-white/60">24시간 변동</div>
+                        <div className={`mt-1 font-semibold ${diffPct >= 0 ? "text-emerald-400" : "text-rose-400"}`}>
+                            {pctFmt(diffPct)}
                         </div>
                     </div>
                     <div>
-                        <div className="text-white/60">24시간 거래량</div>
+                        <div className="text-white/60">24시간 거래대금(USDT)</div>
                         <div className="mt-1 font-semibold">
-                            {cg?.market_data?.total_volume?.usd != null ? nfUSD(cg.market_data.total_volume.usd!) : "—"}
+                            {stat?.quoteVolume ? nfUSD(parseFloat(stat.quoteVolume)) : "—"}
                         </div>
-                    </div>
-                    <div>
-                        <div className="text-white/60">표시 통화</div>
-                        <div className="mt-1 font-semibold">USD</div>
                     </div>
                 </div>
 
                 <div className="mt-4 text-xs text-white/50">
-                    Source: Binance ({BINANCE_SYMBOL}) · Meta: CoinGecko ({COINGECKO_ID})
+                    Source: Binance ({BINANCE_SYMBOL}){isDev ? ` · Meta: CoinGecko (${COINGECKO_ID})` : ""}
                 </div>
             </div>
         </section>
