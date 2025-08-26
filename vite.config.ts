@@ -9,6 +9,15 @@ export default defineConfig({
           tailwindcss(),
     ],
     base:'/BTGG/',
+    server: {
+        proxy: {
+            "/cg": {
+                target: "https://api.coingecko.com",
+                changeOrigin: true,
+                rewrite: (path) => path.replace(/^\/cg/, ""), // '/cg' 접두사 제거
+            },
+        },
+    },
     resolve: {
         alias: {
             '@': path.resolve(__dirname, 'src'),
