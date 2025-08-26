@@ -1,7 +1,7 @@
 // src/components/top/MainTopHeader.tsx
 "use client";
 
-import { useEffect, useId, useRef, useState } from "react";
+import React, { useEffect, useId, useRef, useState } from "react";
 import { Menu, X, ArrowUpRight } from "lucide-react";
 import clsx from "clsx";
 import { ThemeToggle } from "@/components/theme/ThemeToggle";
@@ -81,9 +81,9 @@ export const MainTopHeader = () => {
     }, []);
 
     const navItems = [
-        { label: "Showcase", href: "#" },
-        { label: "Docs", href: "#" },
-        { label: "Blog", href: "#" },
+        { label: "Showcase", href: "#" ,ext: false  },
+        { label: "Docs", href: "#" , ext: false },
+        { label: "Blog", href: "#" ,ext: false  },
         { label: "Templates", href: "#", ext: true },
         { label: "Enterprise", href: "#", ext: true },
     ] as const;
