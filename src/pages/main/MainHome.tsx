@@ -10,9 +10,6 @@ export const MainHome = () => {
     return (
         <DefaultLayout
             topnav={<MainTopHeader/>}
-            rail={<></>}
-            side={<></>}   // 데스크탑용(좌고정)
-            showSideOnMobileTop={false}   // ✅ 모바일에서 side 강제로 숨김
             main={
                 <div className="space-y-6">
                     {/* ✅ 여기 메인 콘텐츠에 차트 패널 삽입 */}
