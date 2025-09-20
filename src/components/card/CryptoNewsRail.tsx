@@ -103,25 +103,7 @@ const NewsCard: React.FC<{ item: NewsItem }> = ({ item }) => {
     const [error, setError] = useState(false);
     const cardRef = useRef<HTMLAnchorElement>(null);
 
-    // 드래그 중 클릭 방지
-    const downPos = useRef<{ x: number; y: number } | null>(null);
-    const moved = useRef(false);
-
-    const onPointerDownCard = (e: React.PointerEvent) => {
-        downPos.current = { x: e.clientX, y: e.clientY };
-        moved.current = false;
-    };
-    const onPointerMoveCard = (e: React.PointerEvent) => {
-        if (!downPos.current) return;
-        const dx = Math.abs(e.clientX - downPos.current.x);
-        const dy = Math.abs(e.clientY - downPos.current.y);
-        if (dx > 6 || dy > 6) moved.current = true;
-    };
-    const onPointerUpCard = () => {
-        downPos.current = null;
-    };
-
-    // 마우스 틸트(은은)
+    // 은은한 틸트
     const onMove = (e: React.MouseEvent) => {
         const el = cardRef.current;
         if (!el) return;
@@ -135,7 +117,6 @@ const NewsCard: React.FC<{ item: NewsItem }> = ({ item }) => {
         if (el) el.style.transform = `perspective(800px) rotateX(0) rotateY(0)`;
     };
 
-    // 파비콘
     const favicon =
         item.url
             ? `https://www.google.com/s2/favicons?domain=${encodeURIComponent(
@@ -152,25 +133,11 @@ const NewsCard: React.FC<{ item: NewsItem }> = ({ item }) => {
             className={[
                 "snap-start relative",
                 `min-w-[${CARD_W}px] h-[${CARD_H}px]`,
-                // 카드 배경/테두리
                 "rounded-2xl border border-white/10 bg-[#1b1c1e]",
-                // 레이아웃
                 "px-5 py-3 flex items-center justify-between",
-                // 호버
                 "transition-[transform,border-color,background] duration-200 will-change-transform",
-                "hover:bg-[#202224] hover:border-white/20",
-                "cursor-pointer",
+                "hover:bg-[#202224] hover:border-white/20 cursor-pointer",
             ].join(" ")}
-            // 드래그 억제: 클릭 직전에 캡처 단계에서만 막음
-            onClickCapture={(e) => {
-                if (moved.current) {
-                    e.preventDefault();
-                    e.stopPropagation();
-                }
-            }}
-            onPointerDown={onPointerDownCard}
-            onPointerMove={onPointerMoveCard}
-            onPointerUp={onPointerUpCard}
             onMouseMove={onMove}
             onMouseLeave={resetTilt}
         >
@@ -195,7 +162,6 @@ const NewsCard: React.FC<{ item: NewsItem }> = ({ item }) => {
                 <div className="mt-1 text-[13px] font-semibold text-emerald-400">
                     {timeAgo(item.publishedAt)}
                 </div>
-
                 {/* 하단 헤어라인 */}
                 <div className="absolute left-4 right-4 bottom-0 h-px bg-white/10 rounded-full" />
             </div>
@@ -204,7 +170,7 @@ const NewsCard: React.FC<{ item: NewsItem }> = ({ item }) => {
             <div className="relative shrink-0 w-[92px] h-[92px] rounded-xl overflow-hidden bg-white/5 border border-white/10">
                 <div
                     className={[
-                        "absolute inset-0",
+                        "absolute inset-0 pointer-events-none",
                         item.imageUrl && !error ? "opacity-100" : "opacity-0",
                         "transition-opacity",
                     ].join(" ")}
@@ -231,7 +197,7 @@ const NewsCard: React.FC<{ item: NewsItem }> = ({ item }) => {
                     <div className="relative z-10 w-full h-full grid place-items-center text-xl">📰</div>
                 )}
                 {!loaded && !error && (
-                    <div className="absolute inset-0 z-20 overflow-hidden">
+                    <div className="absolute inset-0 z-20 overflow-hidden pointer-events-none">
                         <div className="absolute inset-0 bg-white/5" />
                         <div className="absolute inset-0 animate-[shimmer_1.2s_infinite] bg-gradient-to-r from-transparent via-white/10 to-transparent" />
                     </div>
@@ -242,7 +208,7 @@ const NewsCard: React.FC<{ item: NewsItem }> = ({ item }) => {
 };
 
 /* =========================
-   RAIL (호버 시 화살표 표시, 스냅, 드래그 스크럽)
+   RAIL (호버 화살표, 드래그 스크럽, 스냅)
 ========================= */
 export const CryptoNewsRail: React.FC = () => {
     const [items, setItems] = useState<NewsItem[]>([]);
@@ -280,7 +246,6 @@ export const CryptoNewsRail: React.FC = () => {
         load();
     }, [load]);
 
-    // 스크롤/컨트롤
     const scrollerRef = useRef<HTMLDivElement>(null);
     const [canLeft, setCanLeft] = useState(false);
     const [canRight, setCanRight] = useState(false);
@@ -307,15 +272,9 @@ export const CryptoNewsRail: React.FC = () => {
         };
     }, [updateArrows, items.length]);
 
-    const scrollByCard = (dir: "left" | "right") => {
-        const el = scrollerRef.current;
-        if (!el) return;
-        const delta = (CARD_W + 12) * (dir === "left" ? -1 : 1);
-        el.scrollBy({ left: delta, behavior: "smooth" });
-    };
-
-    // 드래그 스크럽
+    // 드래그 스크럽 (여기서만 클릭 억제 판단)
     const isDragging = useRef(false);
+    const dragMoved = useRef(false);
     const startX = useRef(0);
     const startLeft = useRef(0);
 
@@ -323,9 +282,9 @@ export const CryptoNewsRail: React.FC = () => {
         const el = scrollerRef.current;
         if (!el) return;
         isDragging.current = true;
+        dragMoved.current = false;
         startX.current = e.clientX;
         startLeft.current = el.scrollLeft;
-        el.setPointerCapture?.((e as any).pointerId);
         el.style.scrollSnapType = "none";
     };
     const onPointerMove = (e: PointerEvent<HTMLDivElement>) => {
@@ -333,6 +292,7 @@ export const CryptoNewsRail: React.FC = () => {
         const el = scrollerRef.current;
         if (!el) return;
         const dx = e.clientX - startX.current;
+        if (Math.abs(dx) > 6) dragMoved.current = true;
         el.scrollLeft = startLeft.current - dx;
     };
     const onPointerUp = () => {
@@ -341,6 +301,21 @@ export const CryptoNewsRail: React.FC = () => {
         isDragging.current = false;
         el.style.scrollSnapType = "x mandatory";
         updateArrows();
+    };
+    // 드래그 상태면 레일에서 클릭 막기 (카드 <a>는 순수)
+    const onClickCaptureRail = (e: React.MouseEvent<HTMLDivElement>) => {
+        if (dragMoved.current) {
+            e.preventDefault();
+            e.stopPropagation();
+        }
+        dragMoved.current = false; // 다음 클릭은 정상
+    };
+
+    const scrollByCard = (dir: "left" | "right") => {
+        const el = scrollerRef.current;
+        if (!el) return;
+        const delta = (CARD_W + 12) * (dir === "left" ? -1 : 1);
+        el.scrollBy({ left: delta, behavior: "smooth" });
     };
 
     // 키보드 + 오토플레이
@@ -393,9 +368,7 @@ export const CryptoNewsRail: React.FC = () => {
         return items.map((n, i) => (
             <React.Fragment key={n.id}>
                 <NewsCard item={n} />
-                {i !== items.length - 1 && (
-                    <div className="h-[72px] w-px self-center bg-white/12" />
-                )}
+                {i !== items.length - 1 && <div className="h-[72px] w-px self-center bg-white/12" />}
             </React.Fragment>
         ));
     }, [items, loading]);
@@ -438,6 +411,7 @@ export const CryptoNewsRail: React.FC = () => {
                     onPointerMove={onPointerMove}
                     onPointerUp={onPointerUp}
                     onPointerCancel={onPointerUp}
+                    onClickCapture={onClickCaptureRail}
                 >
                     <div className="flex gap-3 min-w-full px-6">{content}</div>
                 </div>
@@ -490,4 +464,3 @@ export const CryptoNewsRail: React.FC = () => {
         </section>
     );
 };
-
