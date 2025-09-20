@@ -13,7 +13,7 @@ import React, {
 ========================= */
 const ORIGIN = "https://api.allorigins.win/get?url=";
 
-// 한국어 코인 뉴스 소스 (필요시 추가/교체 가능)
+// 한국어 코인 뉴스 소스
 const SOURCES = [
     { name: "토큰포스트", url: "https://www.tokenpost.kr/rss" },
     { name: "블록미디어", url: "https://www.blockmedia.co.kr/feed" },
@@ -93,7 +93,7 @@ const parseRSS = (xmlStr: string, sourceName: string): NewsItem[] => {
 };
 
 /* =========================
-   CARD (클릭 → 링크, 드래그 억제, 썸네일/효과)
+   CARD
 ========================= */
 const CARD_W = 480;
 const CARD_H = 106;
@@ -105,21 +105,23 @@ const NewsCard: React.FC<{ item: NewsItem }> = ({ item }) => {
 
     // 드래그 중 클릭 방지
     const downPos = useRef<{ x: number; y: number } | null>(null);
-    const suppressClick = useRef(false);
+    const moved = useRef(false);
 
     const onPointerDownCard = (e: React.PointerEvent) => {
         downPos.current = { x: e.clientX, y: e.clientY };
-        suppressClick.current = false;
+        moved.current = false;
     };
-    const onPointerUpCard = (e: React.PointerEvent) => {
+    const onPointerMoveCard = (e: React.PointerEvent) => {
         if (!downPos.current) return;
         const dx = Math.abs(e.clientX - downPos.current.x);
         const dy = Math.abs(e.clientY - downPos.current.y);
-        if (dx > 6 || dy > 6) suppressClick.current = true; // 끌었으면 클릭 막기
+        if (dx > 6 || dy > 6) moved.current = true;
+    };
+    const onPointerUpCard = () => {
         downPos.current = null;
     };
 
-    // 마우스 틸트(가벼운 3D)
+    // 마우스 틸트(은은)
     const onMove = (e: React.MouseEvent) => {
         const el = cardRef.current;
         if (!el) return;
@@ -133,6 +135,7 @@ const NewsCard: React.FC<{ item: NewsItem }> = ({ item }) => {
         if (el) el.style.transform = `perspective(800px) rotateX(0) rotateY(0)`;
     };
 
+    // 파비콘
     const favicon =
         item.url
             ? `https://www.google.com/s2/favicons?domain=${encodeURIComponent(
@@ -149,44 +152,55 @@ const NewsCard: React.FC<{ item: NewsItem }> = ({ item }) => {
             className={[
                 "snap-start relative",
                 `min-w-[${CARD_W}px] h-[${CARD_H}px]`,
-                "rounded-2xl border border-white/10 bg-[#1c1d1f]",
+                // 카드 배경/테두리
+                "rounded-2xl border border-white/10 bg-[#1b1c1e]",
+                // 레이아웃
                 "px-5 py-3 flex items-center justify-between",
+                // 호버
                 "transition-[transform,border-color,background] duration-200 will-change-transform",
-                "hover:bg-[#202225] hover:border-white/20 cursor-pointer",
+                "hover:bg-[#202224] hover:border-white/20",
+                "cursor-pointer",
             ].join(" ")}
-            onPointerDown={onPointerDownCard}
-            onPointerUp={onPointerUpCard}
-            // 🚩 드래그로 스크롤한 경우만 내비게이션 취소
+            // 드래그 억제: 클릭 직전에 캡처 단계에서만 막음
             onClickCapture={(e) => {
-                if (suppressClick.current) {
+                if (moved.current) {
                     e.preventDefault();
                     e.stopPropagation();
                 }
             }}
+            onPointerDown={onPointerDownCard}
+            onPointerMove={onPointerMoveCard}
+            onPointerUp={onPointerUpCard}
             onMouseMove={onMove}
             onMouseLeave={resetTilt}
         >
-            {/* 왼쪽 텍스트 */}
+            {/* 좌측 텍스트 */}
             <div className="pr-4 min-w-0">
-                <div className="flex items-center gap-2 text-[12px] text-white/70 font-semibold uppercase tracking-wide">
+                <div className="flex items-center gap-2 text-[12px] text-white/65 font-semibold uppercase tracking-wide">
                     {favicon && (
-                        <img src={favicon} alt="" className="h-3.5 w-3.5 rounded-sm opacity-90" />
+                        <img
+                            src={favicon}
+                            alt=""
+                            className="h-3.5 w-3.5 rounded-sm opacity-90"
+                            loading="lazy"
+                            decoding="async"
+                        />
                     )}
                     <span className="truncate">{item.source}</span>
                 </div>
                 <h3 className="mt-1 text-[15px] font-semibold text-white truncate">
                     {item.title}
                 </h3>
-                <p className="mt-0.5 text-[13px] text-white/65 truncate">{item.excerpt}</p>
+                <p className="mt-0.5 text-[13px] text-white/60 line-clamp-1">{item.excerpt}</p>
                 <div className="mt-1 text-[13px] font-semibold text-emerald-400">
                     {timeAgo(item.publishedAt)}
                 </div>
 
-                {/* 바닥 헤어라인 */}
+                {/* 하단 헤어라인 */}
                 <div className="absolute left-4 right-4 bottom-0 h-px bg-white/10 rounded-full" />
             </div>
 
-            {/* 오른쪽 썸네일: 블러 배경 + 전경 + 쉼머 */}
+            {/* 우측 썸네일 (블러 배경 + 전경 + 쉼머) */}
             <div className="relative shrink-0 w-[92px] h-[92px] rounded-xl overflow-hidden bg-white/5 border border-white/10">
                 <div
                     className={[
@@ -214,9 +228,7 @@ const NewsCard: React.FC<{ item: NewsItem }> = ({ item }) => {
                         className="relative z-10 w-full h-full object-contain p-2 transition-transform duration-300 group-hover:scale-[1.03]"
                     />
                 ) : (
-                    <div className="relative z-10 w-full h-full grid place-items-center text-xl">
-                        📰
-                    </div>
+                    <div className="relative z-10 w-full h-full grid place-items-center text-xl">📰</div>
                 )}
                 {!loaded && !error && (
                     <div className="absolute inset-0 z-20 overflow-hidden">
@@ -367,7 +379,7 @@ export const CryptoNewsRail: React.FC = () => {
             return Array.from({ length: 6 }).map((_, i) => (
                 <div
                     key={`skel_${i}`}
-                    className={`min-w-[${CARD_W}px] h-[${CARD_H}px] rounded-2xl bg-[#1c1d1f] border border-white/10 animate-pulse`}
+                    className={`min-w-[${CARD_W}px] h-[${CARD_H}px] rounded-2xl bg-[#1b1c1e] border border-white/10 animate-pulse`}
                 />
             ));
         }
@@ -407,7 +419,7 @@ export const CryptoNewsRail: React.FC = () => {
                 </button>
             </div>
 
-            {/* 레일 (호버 시 화살표 표시, 끝단 마스크) */}
+            {/* 레일 (끝단 마스크 + 호버 화살표) */}
             <div className="relative group">
                 <div
                     ref={scrollerRef}
