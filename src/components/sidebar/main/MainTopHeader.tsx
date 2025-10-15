@@ -2,7 +2,7 @@
 "use client";
 
 import React, { useEffect, useId, useRef, useState } from "react";
-import { Menu, X, ArrowUpRight } from "lucide-react";
+// import { Menu, X, ArrowUpRight } from "lucide-react";
 import clsx from "clsx";
 import { ThemeToggle } from "@/components/theme/ThemeToggle";
 
@@ -80,13 +80,13 @@ export const MainTopHeader = () => {
         return () => window.removeEventListener("keydown", onKey);
     }, []);
 
-    const navItems = [
-        { label: "Showcase", href: "#" ,ext: false  },
-        { label: "Docs", href: "#" , ext: false },
-        { label: "Blog", href: "#" ,ext: false  },
-        { label: "Templates", href: "#", ext: true },
-        { label: "Enterprise", href: "#", ext: true },
-    ] as const;
+    // const navItems = [
+    //     // { label: "Showcase", href: "#" ,ext: false  },
+    //     // { label: "Docs", href: "#" , ext: false },
+    //     // { label: "Blog", href: "#" ,ext: false  },
+    //     // { label: "Templates", href: "#", ext: true },
+    //     // { label: "Enterprise", href: "#", ext: true },
+    // ] as const;
 
     return (
         <header
@@ -123,32 +123,32 @@ export const MainTopHeader = () => {
                         aria-label="Primary"
                         className="flex items-center gap-6 text-[13px] text-black/70 dark:text-white/70"
                     >
-                        {navItems.map((n) => (
-                            <a
-                                key={n.label}
-                                href={n.href}
-                                className={clsx(
-                                    "group relative inline-flex items-center gap-1 py-1 px-1 rounded-md",
-                                    "hover:text-black dark:hover:text-white transition-colors",
-                                    "focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-black/15 dark:focus-visible:ring-white/15"
-                                )}
-                            >
-                                <span>{n.label}</span>
-                                {n.ext && (
-                                    <ArrowUpRight className="ml-0.5 h-[14px] w-[14px]" />
-                                )}
-                                {/* 고급 언더라인 */}
-                                <span
-                                    aria-hidden
-                                    className={clsx(
-                                        "absolute -bottom-0.5 left-1/2 h-[2px] w-0 -translate-x-1/2 rounded-full",
-                                        "bg-black/70 dark:bg-white/80",
-                                        !reduced && "transition-[width] duration-300",
-                                        "group-hover:w-4/5"
-                                    )}
-                                />
-                            </a>
-                        ))}
+                        {/*{navItems.map((n) => (*/}
+                        {/*    <a*/}
+                        {/*        key={n.label}*/}
+                        {/*        href={n.href}*/}
+                        {/*        className={clsx(*/}
+                        {/*            "group relative inline-flex items-center gap-1 py-1 px-1 rounded-md",*/}
+                        {/*            "hover:text-black dark:hover:text-white transition-colors",*/}
+                        {/*            "focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-black/15 dark:focus-visible:ring-white/15"*/}
+                        {/*        )}*/}
+                        {/*    >*/}
+                        {/*        <span>{n.label}</span>*/}
+                        {/*        {n.ext && (*/}
+                        {/*            <ArrowUpRight className="ml-0.5 h-[14px] w-[14px]" />*/}
+                        {/*        )}*/}
+                        {/*        /!* 고급 언더라인 *!/*/}
+                        {/*        <span*/}
+                        {/*            aria-hidden*/}
+                        {/*            className={clsx(*/}
+                        {/*                "absolute -bottom-0.5 left-1/2 h-[2px] w-0 -translate-x-1/2 rounded-full",*/}
+                        {/*                "bg-black/70 dark:bg-white/80",*/}
+                        {/*                !reduced && "transition-[width] duration-300",*/}
+                        {/*                "group-hover:w-4/5"*/}
+                        {/*            )}*/}
+                        {/*        />*/}
+                        {/*    </a>*/}
+                        {/*))}*/}
                     </nav>
 
                     {/* 검색 */}
@@ -169,37 +169,7 @@ export const MainTopHeader = () => {
 
                 {/* 우측: CTA + Theme + 햄버거 */}
                 <div className="flex items-center gap-2 sm:gap-3">
-                    <a
-                        href="#"
-                        className="hidden sm:inline-flex h-9 items-center gap-2 rounded-[10px] border border-black/15 bg-black px-3 text-[13px] text-white
-                       hover:bg-black/90 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-black/20 dark:border-white/10"
-                    >
-                        <svg width="14" height="14" viewBox="0 0 24 24" aria-hidden>
-                            <path d="M12 2L22 20H2L12 2Z" className="fill-white" />
-                        </svg>
-                        Deploy
-                    </a>
-
-                    <a
-                        href="#"
-                        className="hidden sm:inline-flex h-9 items-center rounded-[10px] border border-black/10 bg-white px-3 text-[13px] text-black
-                       hover:bg-zinc-100 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-black/10
-                       dark:border-white/20 dark:bg-white dark:text-black"
-                    >
-                        Learn
-                    </a>
-
                     <ThemeToggle />
-
-                    <button
-                        className="ml-1 inline-flex items-center justify-center rounded-md p-1.5 md:hidden hover:bg-black/5 dark:hover:bg-white/10 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-black/20 dark:focus-visible:ring-white/20"
-                        aria-label={open ? "Close menu" : "Open menu"}
-                        aria-controls={mobilePanelId}
-                        aria-expanded={open}
-                        onClick={() => setOpen((v) => !v)}
-                    >
-                        {open ? <X className="h-6 w-6" /> : <Menu className="h-6 w-6" />}
-                    </button>
                 </div>
             </div>
 
@@ -251,26 +221,7 @@ export const MainTopHeader = () => {
 
                     {/* CTA(모바일) */}
                     <div className="flex gap-2 pt-2">
-                        <a
-                            href="#"
-                            className="inline-flex h-10 flex-1 items-center justify-center gap-2 rounded-[10px] border border-black/15 bg-black px-3 text-[13px] text-white
-                         hover:bg-black/90 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-black/20 dark:border-white/10"
-                            onClick={() => setOpen(false)}
-                        >
-                            <svg width="14" height="14" viewBox="0 0 24 24" aria-hidden className="shrink-0">
-                                <path d="M12 2L22 20H2L12 2Z" className="fill-white" />
-                            </svg>
-                            Deploy
-                        </a>
-                        <a
-                            href="#"
-                            className="inline-flex h-10 flex-1 items-center justify-center rounded-[10px] border border-black/10 bg-white px-3 text-[13px] text-black
-                         hover:bg-zinc-100 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-black/10
-                         dark:border-white/20 dark:bg-white dark:text-black"
-                            onClick={() => setOpen(false)}
-                        >
-                            Learn
-                        </a>
+
                     </div>
                 </div>
             </div>

@@ -72,14 +72,13 @@ type CgInfo = {
 };
 
 type Binance24h = {
-    priceChangePercent: string; // "2.34"
-    lastPrice: string;          // "67890.12"
-    volume: string;             // base asset volume
-    quoteVolume: string;        // quote asset volume (USDT 기준)
+    priceChangePercent: string;
+    lastPrice: string;
+    volume: string;
+    quoteVolume: string;
 };
 
 /* ─────────────────── Fetchers ─────────────────── */
-// klines
 const RANGE_TO_BINANCE: Record<
     RangeKey,
     { interval: "1m" | "5m" | "15m" | "1h" | "4h" | "1d"; limit: number }
@@ -111,7 +110,6 @@ const fetchKlines = async (url: string): Promise<Candle[]> => {
     }));
 };
 
-// 24h ticker (CORS OK)
 const binance24hUrl = `https://api.binance.com/api/v3/ticker/24hr?symbol=${BINANCE_SYMBOL}`;
 const fetch24h = async (url: string): Promise<Binance24h> => {
     const r = await fetch(url, { cache: "no-store" });
@@ -125,9 +123,8 @@ const fetch24h = async (url: string): Promise<Binance24h> => {
     };
 };
 
-// CoinGecko (로컬 개발에서만 프록시 사용)
 const isDev = import.meta.env.DEV;
-const CG_BASE = isDev ? "/cg" : ""; // 배포에서는 XHR 호출 안 함!
+const CG_BASE = isDev ? "/cg" : "";
 
 const fetchCgInfo = async (id: string): Promise<CgInfo> => {
     if (!isDev) throw new Error("CG disabled in production");
@@ -181,25 +178,52 @@ const useIsMobile = () => {
     return m;
 };
 
+// 다크모드 감지 훅
+const useDarkMode = () => {
+    const [isDark, setIsDark] = useState<boolean>(() => {
+        if (typeof window === "undefined") return true;
+        return document.documentElement.classList.contains("dark");
+    });
+
+    useEffect(() => {
+        const observer = new MutationObserver(() => {
+            setIsDark(document.documentElement.classList.contains("dark"));
+        });
+
+        observer.observe(document.documentElement, {
+            attributes: true,
+            attributeFilter: ["class"],
+        });
+
+        return () => observer.disconnect();
+    }, []);
+
+    return isDark;
+};
+
 /* ─────────────────── Tooltip ─────────────────── */
 type TTProps = TooltipProps<ValueType, NameType> & {
     payload?: Array<{ payload: Candle }>;
     label?: number;
 };
 
-const ChartTooltip: React.FC<TTProps> = ({ active, payload, label }) => {
+const ChartTooltip: React.FC<TTProps & { isDark: boolean }> = ({ active, payload, label, isDark }) => {
     if (!active || !payload || payload.length === 0 || !label) return null;
     const d = new Date(label);
     const hh = String(d.getHours()).padStart(2, "0");
     const mm = String(d.getMinutes()).padStart(2, "0");
     const price = (payload[0].payload as Candle).c;
     return (
-        <div className="rounded-lg border border-white/10 bg-black/80 px-3 py-2 text-xs text-white backdrop-blur">
+        <div className={`rounded-lg border px-3 py-2 text-xs backdrop-blur ${
+            isDark
+                ? "border-white/10 bg-black/80 text-white"
+                : "border-gray-200 bg-white/90 text-gray-900"
+        }`}>
             <div className="mb-1 font-semibold">
                 {d.getFullYear()}.{d.getMonth() + 1}.{d.getDate()} {hh}:{mm}
             </div>
             <div className="flex items-center gap-2">
-                <span className="text-white/60">가격</span>
+                <span className={isDark ? "text-white/60" : "text-gray-600"}>가격</span>
                 <b>{nfUSD(price)}</b>
             </div>
         </div>
@@ -211,55 +235,61 @@ const Toolbar: React.FC<{
     meta: HeaderMeta;
     range: RangeKey;
     onRange: (rk: RangeKey) => void;
-}> = ({ meta, range, onRange }) => {
+    isDark: boolean;
+}> = ({ meta, range, onRange, isDark }) => {
     const pill = (active: boolean) =>
         `h-8 rounded-md px-2 text-xs font-semibold transition ${
-            active ? "bg-white/10 text-white" : "bg-white/5 text-white/70 hover:bg-white/10"
+            active
+                ? isDark ? "bg-white/10 text-white" : "bg-gray-200 text-gray-900"
+                : isDark ? "bg-white/5 text-white/70 hover:bg-white/10" : "bg-gray-100 text-gray-600 hover:bg-gray-200"
         }`;
+
+    const iconBtnClass = isDark
+        ? "bg-white/5 hover:bg-white/10 text-white/80"
+        : "bg-gray-100 hover:bg-gray-200 text-gray-700";
 
     return (
         <div className="flex items-center gap-3 min-w-0">
-            <img
-                src={meta.logoUrl}
-                alt={meta.symbol}
-                className="size-9 rounded-full border border-white/10 object-contain bg-black/20 shrink-0"
-            />
-
             <div className="text-lg sm:text-xl font-semibold truncate">
-                {meta.name} <span className="text-white/60">{meta.symbol}</span>
+                {meta.name} <span className={isDark ? "text-white/60" : "text-gray-500"}>{meta.symbol}</span>
             </div>
 
             <div className="hidden sm:flex items-center gap-1 ml-1 shrink-0">
-                <span className="rounded bg-white/10 px-2 py-[2px] text-[11px]">{meta.symbol}</span>
-                <span className="rounded bg-white/10 px-2 py-[2px] text-[11px]">{meta.chainBadge}</span>
-                <span className="rounded bg-white/10 px-2 py-[2px] text-[11px]">{meta.typeBadge}</span>
+                <span className={`rounded px-2 py-[2px] text-[11px] ${isDark ? "bg-white/10" : "bg-gray-200 text-gray-700"}`}>
+                    {meta.symbol}
+                </span>
+                <span className={`rounded px-2 py-[2px] text-[11px] ${isDark ? "bg-white/10" : "bg-gray-200 text-gray-700"}`}>
+                    {meta.chainBadge}
+                </span>
+                <span className={`rounded px-2 py-[2px] text-[11px] ${isDark ? "bg-white/10" : "bg-gray-200 text-gray-700"}`}>
+                    {meta.typeBadge}
+                </span>
             </div>
 
-            <div className="ml-auto flex items-center gap-2 text-white/80 shrink-0">
-                <button className="hidden md:inline-flex size-8 items-center justify-center rounded-md bg-white/5 hover:bg-white/10" title="복사">
+            <div className="ml-auto flex items-center gap-2 shrink-0">
+                <button className={`hidden md:inline-flex size-8 items-center justify-center rounded-md ${iconBtnClass}`} title="복사">
                     <Copy className="h-4 w-4" />
                 </button>
-                <button className="hidden md:inline-flex size-8 items-center justify-center rounded-md bg-white/5 hover:bg-white/10" title="메뉴">
+                <button className={`hidden md:inline-flex size-8 items-center justify-center rounded-md ${iconBtnClass}`} title="메뉴">
                     <Menu className="h-4 w-4" />
                 </button>
                 {meta.siteUrl && (
-                    <a href={meta.siteUrl} target="_blank" className="size-8 grid place-items-center rounded-md bg-white/5 hover:bg-white/10" title="웹사이트">
+                    <a href={meta.siteUrl} target="_blank" className={`size-8 grid place-items-center rounded-md ${iconBtnClass}`} title="웹사이트">
                         <Globe className="h-4 w-4" />
                     </a>
                 )}
                 {meta.twitterUrl && (
-                    <a href={meta.twitterUrl} target="_blank" className="size-8 grid place-items-center rounded-md bg-white/5 hover:bg-white/10" title="X">
+                    <a href={meta.twitterUrl} target="_blank" className={`size-8 grid place-items-center rounded-md ${iconBtnClass}`} title="X">
                         <Twitter className="h-4 w-4" />
                     </a>
                 )}
                 {meta.telegramUrl && (
-                    <a href={meta.telegramUrl} target="_blank" className="size-8 grid place-items-center rounded-md bg-white/5 hover:bg-white/10" title="Telegram">
+                    <a href={meta.telegramUrl} target="_blank" className={`size-8 grid place-items-center rounded-md ${iconBtnClass}`} title="Telegram">
                         <Send className="h-4 w-4" />
                     </a>
                 )}
             </div>
 
-            {/* 범위 버튼: 모바일 가로 스크롤 */}
             <div className="ml-2 flex gap-1 overflow-x-auto no-scrollbar shrink-0">
                 {(["All", "1y", "30d", "7d", "1d", "1h"] as RangeKey[]).map((rk) => (
                     <button key={rk} onClick={() => onRange(rk)} className={pill(range === rk)}>
@@ -269,12 +299,12 @@ const Toolbar: React.FC<{
             </div>
 
             <div className="ml-1 hidden sm:flex items-center gap-1 shrink-0">
-        <span className="size-8 grid place-items-center rounded-md bg-white/5">
-          <LineIcon className="h-4 w-4" />
-        </span>
-                <span className="size-8 grid place-items-center rounded-md bg-white/5">
-          <Settings className="h-4 w-4" />
-        </span>
+                <span className={`size-8 grid place-items-center rounded-md ${isDark ? "bg-white/5" : "bg-gray-100"}`}>
+                    <LineIcon className="h-4 w-4" />
+                </span>
+                <span className={`size-8 grid place-items-center rounded-md ${isDark ? "bg-white/5" : "bg-gray-100"}`}>
+                    <Settings className="h-4 w-4" />
+                </span>
             </div>
         </div>
     );
@@ -284,33 +314,30 @@ const Toolbar: React.FC<{
 export const MarketChartPanel: React.FC = () => {
     const [range, setRange] = useState<RangeKey>("1d");
     const [useLog, setUseLog] = useState(false);
-    const [showVolume, setShowVolume] = useState(true);
-    const [showSMA, setShowSMA] = useState(true);
-    const [showEMA, setShowEMA] = useState(true);
+    const [showVolume, setShowVolume] = useState(false);
+    const [showSMA, setShowSMA] = useState(false);
+    const [showEMA, setShowEMA] = useState(false);
     const isMobile = useIsMobile();
+    const isDark = useDarkMode();
 
-    // Binance 차트
     const { data: candles = [], error, isLoading } = useSWR(
         binanceKlinesUrl(range),
         fetchKlines,
         { refreshInterval: 180_000, revalidateOnFocus: false }
     );
 
-    // Binance 24h (배포에서도 사용)
     const { data: stat } = useSWR<Binance24h>(
         binance24hUrl,
         fetch24h,
         { refreshInterval: 180_000, revalidateOnFocus: false }
     );
 
-    // CoinGecko (로컬 개발에서만 사용)
     const { data: cg } = useSWR<CgInfo>(
         isDev ? ["cg", COINGECKO_ID] : null,
         () => fetchCgInfo(COINGECKO_ID),
         { refreshInterval: 180_000, revalidateOnFocus: false }
     );
 
-    // 메타 구성
     const meta: HeaderMeta = useMemo(() => {
         if (cg) {
             const homepage = cg.links?.homepage?.find((x) => x && x.trim().length > 0) ?? undefined;
@@ -331,17 +358,15 @@ export const MarketChartPanel: React.FC = () => {
                 telegramUrl: telegram,
             };
         }
-        // 프로덕션 fallback(이미지 CDN 사용)
         return {
             name: BINANCE_SYMBOL.replace("USDT", ""),
             symbol: BINANCE_SYMBOL.slice(0, -4),
             chainBadge: "NATIVE",
             typeBadge: "COIN",
-            logoUrl: `https://cryptoicons.org/api/icon/${BINANCE_SYMBOL.slice(0, -4).toLowerCase()}/64`, // 이미지 호출은 CORS OK
+            logoUrl: `https://cryptoicons.org/api/icon/${BINANCE_SYMBOL.slice(0, -4).toLowerCase()}/64`,
         };
     }, [cg]);
 
-    // 지표 계산
     const closes = useMemo(() => candles.map((d) => d.c), [candles]);
     const sma7 = useMemo(() => sma(closes, 7), [closes]);
     const ema25 = useMemo(() => ema(closes, 25), [closes]);
@@ -355,26 +380,34 @@ export const MarketChartPanel: React.FC = () => {
         [candles, sma7, ema25]
     );
 
-    // 현재가/변동(배포에서도 동작: Binance 24h 기준)
     const last = stat ? parseFloat(stat.lastPrice) : (candles.at(-1)?.c ?? 0);
     const first = candles[0]?.c ?? last;
     const diffPct = stat ? parseFloat(stat.priceChangePercent) : ((last - first) / (first || 1)) * 100;
 
-    const pal = {
-        shell: "bg-black text-white",
-        grid: "rgba(255,255,255,0.06)",
-        axis: "rgba(255,255,255,0.10)",
-        tick: "rgba(255,255,255,0.65)",
-        line: "#ff5b5b",
-        areaTop: "rgba(239,68,68,.22)",
-        areaBottom: "rgba(239,68,68,.02)",
-    };
+    // 테마별 색상 팔레트
+    const pal = useMemo(() => ({
+        shell: isDark ? "bg-black text-white" : "bg-white text-gray-900",
+        grid: isDark ? "rgba(255,255,255,0.06)" : "rgba(0,0,0,0.06)",
+        axis: isDark ? "rgba(255,255,255,0.10)" : "rgba(0,0,0,0.10)",
+        tick: isDark ? "rgba(255,255,255,0.65)" : "rgba(0,0,0,0.65)",
+        line: isDark ? "#ff5b5b" : "#ef4444",
+        areaTop: isDark ? "rgba(239,68,68,.22)" : "rgba(239,68,68,.15)",
+        areaBottom: isDark ? "rgba(239,68,68,.02)" : "rgba(239,68,68,.01)",
+        chartBg: isDark ? "bg-black" : "bg-gray-50",
+        border: isDark ? "border-white/10" : "border-gray-200",
+    }), [isDark]);
+
+    const tabs = ["차트", "호가", "내 주식", "종목정보", "커뮤니티"];
+    const [activeTab, setActiveTab] = useState("차트");
+
+    const buttonClass = isDark
+        ? "rounded-md bg-white/5 px-2 py-1 hover:bg-white/10"
+        : "rounded-md bg-gray-100 px-2 py-1 hover:bg-gray-200";
 
     return (
         <section className={`rounded-2xl ${pal.shell} p-3 sm:p-4 min-w-0`}>
-            <Toolbar meta={meta} range={range} onRange={setRange} />
+            <Toolbar meta={meta} range={range} onRange={setRange} isDark={isDark} />
 
-            {/* 현재가/상태 */}
             <div className="mt-3 flex items-center gap-2">
                 <div className="text-3xl sm:text-4xl font-extrabold tracking-tight tabular-nums">{nfUSD(last)}</div>
                 <span
@@ -382,150 +415,225 @@ export const MarketChartPanel: React.FC = () => {
                         diffPct >= 0 ? "bg-emerald-500/15 text-emerald-300" : "bg-rose-500/15 text-rose-300"
                     }`}
                 >
-          {pctFmt(diffPct)}
-        </span>
+                    {pctFmt(diffPct)}
+                </span>
                 <div className="ml-auto flex flex-wrap items-center gap-2 text-xs shrink-0">
-                    <button onClick={() => setUseLog((s) => !s)} className="rounded-md bg-white/5 px-2 py-1 hover:bg-white/10" title="축 스케일">
+                    <button onClick={() => setUseLog((s) => !s)} className={buttonClass} title="축 스케일">
                         {useLog ? "로그" : "선형"}
                     </button>
-                    <button onClick={() => setShowVolume((s) => !s)} className="rounded-md bg-white/5 px-2 py-1 hover:bg-white/10 flex items-center gap-1">
+                    <button onClick={() => setShowVolume((s) => !s)} className={`${buttonClass} flex items-center gap-1`}>
                         <BarChart3 className="h-4 w-4" /> 거래량
                     </button>
-                    <button onClick={() => setShowSMA((s) => !s)} className="rounded-md bg-white/5 px-2 py-1 hover:bg-white/10">
+                    <button onClick={() => setShowSMA((s) => !s)} className={buttonClass}>
                         SMA 7
                     </button>
-                    <button onClick={() => setShowEMA((s) => !s)} className="rounded-md bg-white/5 px-2 py-1 hover:bg-white/10">
+                    <button onClick={() => setShowEMA((s) => !s)} className={buttonClass}>
                         EMA 25
                     </button>
-                    {isLoading && <span className="text-white/60">갱신 중…</span>}
+                    {isLoading && <span className={isDark ? "text-white/60" : "text-gray-500"}>갱신 중…</span>}
                     {error && <span className="text-rose-400">데이터 오류</span>}
                 </div>
             </div>
 
-            {/* 차트 */}
-            <div className="mt-2 rounded-xl bg-black p-2 sm:p-3 overflow-hidden min-w-0">
-                <div className="h-[220px] sm:h-[340px]">
-                    <ResponsiveContainer>
-                        <ComposedChart
-                            data={chartData}
-                            margin={
-                                isMobile
-                                    ? { top: 6, left: 6, right: 6, bottom: 0 }
-                                    : { top: 8, left: 8, right: 8, bottom: 0 }
-                            }
-                        >
-                            <CartesianGrid stroke={pal.grid} vertical={false} />
-                            <XAxis
-                                dataKey="t"
-                                interval="preserveStartEnd"
-                                tickFormatter={(v) => tickDate(v as number)}
-                                tick={{ fill: pal.tick, fontSize: isMobile ? 10 : 12 }}
-                                axisLine={{ stroke: pal.axis }}
-                                tickLine={false}
-                                minTickGap={isMobile ? 10 : 26}
-                                tickMargin={isMobile ? 6 : 8}
-                            />
-                            <YAxis
-                                yAxisId="price"
-                                dataKey="c"
-                                width={isMobile ? 56 : 70}
-                                scale={useLog ? "log" : "auto"}
-                                tick={{ fill: pal.tick, fontSize: isMobile ? 10 : 12 }}
-                                axisLine={{ stroke: pal.axis }}
-                                tickLine={false}
-                                tickFormatter={(n: number) =>
-                                    isMobile ? nfUSDCompact(n) : n < 1 ? n.toExponential(2) : `$${n.toLocaleString()}`
-                                }
-                            />
-                            {showVolume && <YAxis yAxisId="vol" hide domain={[0, "auto"]} />}
-
-                            <Tooltip content={<ChartTooltip />} />
-                            <ReferenceLine yAxisId="price" y={first} stroke={pal.axis} strokeDasharray="3 3" />
-
-                            <defs>
-                                <linearGradient id="areaRed" x1="0" x2="0" y1="0" y2="1">
-                                    <stop offset="0%" stopColor={pal.areaTop} />
-                                    <stop offset="100%" stopColor={pal.areaBottom} />
-                                </linearGradient>
-                            </defs>
-
-                            <Area
-                                yAxisId="price"
-                                type="monotone"
-                                dataKey="c"
-                                stroke={pal.line}
-                                strokeWidth={2.2}
-                                fill="url(#areaRed)"
-                                dot={false}
-                                isAnimationActive={false}
-                            />
-
-                            {showSMA && (
-                                <Area
-                                    yAxisId="price"
-                                    type="monotone"
-                                    dataKey="sma7"
-                                    stroke="#34D399"
-                                    strokeWidth={1.6}
-                                    fillOpacity={0}
-                                    dot={false}
-                                    isAnimationActive={false}
-                                />
-                            )}
-                            {showEMA && (
-                                <Area
-                                    yAxisId="price"
-                                    type="monotone"
-                                    dataKey="ema25"
-                                    stroke="#A78BFA"
-                                    strokeWidth={1.6}
-                                    fillOpacity={0}
-                                    dot={false}
-                                    isAnimationActive={false}
-                                />
-                            )}
-
-                            {showVolume && (
-                                <Bar
-                                    yAxisId="vol"
-                                    dataKey="v"
-                                    barSize={2}
-                                    fill="rgba(255,255,255,0.18)"
-                                    isAnimationActive={false}
-                                />
-                            )}
-                        </ComposedChart>
-                    </ResponsiveContainer>
-                </div>
-
-                {/* 하단 메트릭: 배포에서도 모두 표시 가능(Binance 24h 사용) */}
-                <div className="mt-4 grid grid-cols-2 sm:grid-cols-4 gap-4 text-sm">
-                    <div>
-                        <div className="text-white/60">체인</div>
-                        <div className="mt-1 font-semibold">{meta.chainBadge}</div>
-                    </div>
-                    <div>
-                        <div className="text-white/60">마지막 가격</div>
-                        <div className="mt-1 font-semibold">{nfUSD(last)}</div>
-                    </div>
-                    <div>
-                        <div className="text-white/60">24시간 변동</div>
-                        <div className={`mt-1 font-semibold ${diffPct >= 0 ? "text-emerald-400" : "text-rose-400"}`}>
-                            {pctFmt(diffPct)}
-                        </div>
-                    </div>
-                    <div>
-                        <div className="text-white/60">24시간 거래대금(USDT)</div>
-                        <div className="mt-1 font-semibold">
-                            {stat?.quoteVolume ? nfUSD(parseFloat(stat.quoteVolume)) : "—"}
-                        </div>
-                    </div>
-                </div>
-
-                <div className="mt-4 text-xs text-white/50">
-                    Source: Binance ({BINANCE_SYMBOL}){isDev ? ` · Meta: CoinGecko (${COINGECKO_ID})` : ""}
-                </div>
+            <div className={`flex gap-6 px-4 pt-4 border-b ${pal.border}`}>
+                {tabs.map(tab => (
+                    <button
+                        key={tab}
+                        onClick={() => setActiveTab(tab)}
+                        className={`pb-3 text-base font-medium transition-colors relative cursor-pointer ${
+                            activeTab === tab
+                                ? isDark ? "text-white" : "text-gray-900"
+                                : isDark ? "text-white/40 hover:text-white/70" : "text-gray-400 hover:text-gray-600"
+                        }`}
+                    >
+                        {tab}
+                        {activeTab === tab && (
+                            <div className={`absolute bottom-0 left-0 right-0 h-0.5 rounded-t ${
+                                isDark ? "bg-white" : "bg-gray-900"
+                            }`} />
+                        )}
+                    </button>
+                ))}
             </div>
+
+            {/* 차트 탭 */}
+            {activeTab === "차트" && (
+                <div className={`mt-2 rounded-xl ${pal.chartBg} p-2 sm:p-3 overflow-hidden min-w-0 animate-fade-in`}>
+                    <div className="h-[220px] sm:h-[340px]">
+                        <ResponsiveContainer>
+                            <ComposedChart
+                                data={chartData}
+                                margin={
+                                    isMobile
+                                        ? { top: 6, left: 6, right: 6, bottom: 0 }
+                                        : { top: 8, left: 8, right: 8, bottom: 0 }
+                                }
+                            >
+                                <CartesianGrid stroke={pal.grid} vertical={false} />
+                                <XAxis
+                                    dataKey="t"
+                                    interval="preserveStartEnd"
+                                    tickFormatter={(v) => tickDate(v as number)}
+                                    tick={{ fill: pal.tick, fontSize: isMobile ? 10 : 12 }}
+                                    axisLine={{ stroke: pal.axis }}
+                                    tickLine={false}
+                                    minTickGap={isMobile ? 10 : 26}
+                                    tickMargin={isMobile ? 6 : 8}
+                                />
+                                <YAxis
+                                    yAxisId="price"
+                                    dataKey="c"
+                                    width={isMobile ? 56 : 70}
+                                    scale={useLog ? "log" : "auto"}
+                                    tick={{ fill: pal.tick, fontSize: isMobile ? 10 : 12 }}
+                                    axisLine={{ stroke: pal.axis }}
+                                    tickLine={false}
+                                    tickFormatter={(n: number) =>
+                                        isMobile ? nfUSDCompact(n) : n < 1 ? n.toExponential(2) : `$${n.toLocaleString()}`
+                                    }
+                                />
+                                {showVolume && <YAxis yAxisId="vol" hide domain={[0, "auto"]} />}
+
+                                <Tooltip content={<ChartTooltip isDark={isDark} />} />
+                                <ReferenceLine yAxisId="price" y={first} stroke={pal.axis} strokeDasharray="3 3" />
+
+                                <defs>
+                                    <linearGradient id="areaRed" x1="0" x2="0" y1="0" y2="1">
+                                        <stop offset="0%" stopColor={pal.areaTop} />
+                                        <stop offset="100%" stopColor={pal.areaBottom} />
+                                    </linearGradient>
+                                </defs>
+
+                                <Area
+                                    yAxisId="price"
+                                    type="monotone"
+                                    dataKey="c"
+                                    stroke={pal.line}
+                                    strokeWidth={2.2}
+                                    fill="url(#areaRed)"
+                                    dot={false}
+                                    isAnimationActive={false}
+                                />
+
+                                {showSMA && (
+                                    <Area
+                                        yAxisId="price"
+                                        type="monotone"
+                                        dataKey="sma7"
+                                        stroke="#34D399"
+                                        strokeWidth={1.6}
+                                        fillOpacity={0}
+                                        dot={false}
+                                        isAnimationActive={false}
+                                    />
+                                )}
+                                {showEMA && (
+                                    <Area
+                                        yAxisId="price"
+                                        type="monotone"
+                                        dataKey="ema25"
+                                        stroke="#A78BFA"
+                                        strokeWidth={1.6}
+                                        fillOpacity={0}
+                                        dot={false}
+                                        isAnimationActive={false}
+                                    />
+                                )}
+
+                                {showVolume && (
+                                    <Bar
+                                        yAxisId="vol"
+                                        dataKey="v"
+                                        barSize={2}
+                                        fill={isDark ? "rgba(255,255,255,0.18)" : "rgba(0,0,0,0.12)"}
+                                        isAnimationActive={false}
+                                    />
+                                )}
+                            </ComposedChart>
+                        </ResponsiveContainer>
+                    </div>
+
+                    <div className="mt-4 grid grid-cols-2 sm:grid-cols-4 gap-4 text-sm">
+                        <div>
+                            <div className={isDark ? "text-white/60" : "text-gray-600"}>체인</div>
+                            <div className="mt-1 font-semibold">{meta.chainBadge}</div>
+                        </div>
+                        <div>
+                            <div className={isDark ? "text-white/60" : "text-gray-600"}>마지막 가격</div>
+                            <div className="mt-1 font-semibold">{nfUSD(last)}</div>
+                        </div>
+                        <div>
+                            <div className={isDark ? "text-white/60" : "text-gray-600"}>24시간 변동</div>
+                            <div className={`mt-1 font-semibold ${diffPct >= 0 ? "text-emerald-400" : "text-rose-400"}`}>
+                                {pctFmt(diffPct)}
+                            </div>
+                        </div>
+                        <div>
+                            <div className={isDark ? "text-white/60" : "text-gray-600"}>24시간 거래대금(USDT)</div>
+                            <div className="mt-1 font-semibold">
+                                {stat?.quoteVolume ? nfUSD(parseFloat(stat.quoteVolume)) : "—"}
+                            </div>
+                        </div>
+                    </div>
+
+                    <div className={`mt-4 text-xs ${isDark ? "text-white/50" : "text-gray-500"}`}>
+                        Source: Binance ({BINANCE_SYMBOL}){isDev ? ` · Meta: CoinGecko (${COINGECKO_ID})` : ""}
+                    </div>
+                </div>
+            )}
+
+            {/* 호가 탭 */}
+            {activeTab === "호가" && (
+                <div className={`mt-4 rounded-xl ${pal.chartBg} p-6 text-center animate-fade-in`}>
+                    <div className={isDark ? "text-white/60" : "text-gray-600"}>
+                        호가 정보가 여기에 표시됩니다
+                    </div>
+                </div>
+            )}
+
+            {/* 내 주식 탭 */}
+            {activeTab === "내 주식" && (
+                <div className={`mt-4 rounded-xl ${pal.chartBg} p-6 text-center animate-fade-in`}>
+                    <div className={isDark ? "text-white/60" : "text-gray-600"}>
+                        보유 주식 정보가 여기에 표시됩니다
+                    </div>
+                </div>
+            )}
+
+            {/* 종목정보 탭 */}
+            {activeTab === "종목정보" && (
+                <div className={`mt-4 rounded-xl ${pal.chartBg} p-6 text-center animate-fade-in`}>
+                    <div className={isDark ? "text-white/60" : "text-gray-600"}>
+                        종목 상세 정보가 여기에 표시됩니다
+                    </div>
+                </div>
+            )}
+
+            {/* 커뮤니티 탭 */}
+            {activeTab === "커뮤니티" && (
+                <div className={`mt-4 rounded-xl ${pal.chartBg} p-6 text-center animate-fade-in`}>
+                    <div className={isDark ? "text-white/60" : "text-gray-600"}>
+                        커뮤니티 게시글이 여기에 표시됩니다
+                    </div>
+                </div>
+            )}
+
+            {/* 페이드인 애니메이션 스타일 */}
+            <style>{`
+                @keyframes fadeIn {
+                    from {
+                        opacity: 0;
+                        transform: translateY(10px);
+                    }
+                    to {
+                        opacity: 1;
+                        transform: translateY(0);
+                    }
+                }
+                .animate-fade-in {
+                    animation: fadeIn 0.3s ease-out;
+                }
+            `}</style>
         </section>
     );
 };
